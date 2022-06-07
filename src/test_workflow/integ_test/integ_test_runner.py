@@ -42,7 +42,7 @@ class IntegTestRunner(abc.ABC):
                 if component.name in self.test_manifest.components:
                     test_config = self.test_manifest.components[component.name]
                     if test_config.integ_test:
-                        test_suite = self.__create_test_suite__(component, test_config, work_dir.path)
+                        test_suite = self.__create_test_suite__(component, integtest_components, test_config, work_dir.path)
                         test_results = test_suite.execute_tests()
                         all_results.append(component.name, test_results)
                     else:
