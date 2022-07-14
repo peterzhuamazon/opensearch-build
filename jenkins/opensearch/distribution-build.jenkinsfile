@@ -95,8 +95,6 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
         stage('update index file') {
             agent {
                 docker {
