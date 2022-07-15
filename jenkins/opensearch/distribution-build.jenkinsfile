@@ -228,7 +228,7 @@ pipeline {
                 stage('build-and-test-x64-zip-windows') {
                     agent {
                         node {
-                            label 'Jenkins-Agent-Windows2016-X64-M52xlarge-Single-Host'
+                            label 'Jenkins-Agent-Windows2019-X64-M52xlarge-Single-Host'
                         }
                     }
                     steps {
