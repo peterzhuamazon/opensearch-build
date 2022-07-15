@@ -231,10 +231,10 @@ pipeline {
                             label 'Jenkins-Agent-Windows2019-X64-M52xlarge-Single-Host'
                         }
                     }
+                    tools {
+                        jdk 'jdk-17'
+                    }
                     steps {
-                        tools {
-                            jdk 'jdk-17'
-                        }
                         script {
                             def buildManifestObj = buildAssembleUpload(
                                 componentName: "${COMPONENT_NAME}",
