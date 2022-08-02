@@ -304,8 +304,9 @@ pipeline {
                                 //    "\n${env.ARTIFACT_URL_X64_TAR_INTEG_TEST_RESULT}" +
                                 //    "\n${env.ARTIFACT_URL_X64_TAR_BWC_TEST_RESULT}"
                                 //)
-
+                                echo "Start post"
                                 postCleanup()
+                                echo "End post"
                             }
                         }
                     }
