@@ -44,9 +44,10 @@ pipeline {
                     Rebuilding of this job will result in considering upstream build as self($JOB_NAME) See https://issues.jenkins.io/browse/JENKINS-61590 for bug
                     Either trigger from expected upstream job or run a new build
                     */
-                    env.BUILD_JOB_NAME = currentBuild.upstreamBuilds ? 
-                        currentBuild.upstreamBuilds[0].fullProjectName : 
-                        env.DEFAULT_BUILD_JOB_NAME
+                    //env.BUILD_JOB_NAME = currentBuild.upstreamBuilds ? 
+                    //    currentBuild.upstreamBuilds[0].fullProjectName : 
+                    //    env.DEFAULT_BUILD_JOB_NAME
+                    env.BUILD_JOB_NAME = env.DEFAULT_BUILD_JOB_NAME
                 }
             }
         }
