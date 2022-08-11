@@ -598,7 +598,9 @@ pipeline {
         //}
     }
     post {
-        postCleanup()
+        always{
+            postCleanup()
+        }
     }
 }
 
