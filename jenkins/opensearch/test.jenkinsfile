@@ -234,8 +234,8 @@ pipeline {
                                             ]
 
                                         echo "test123"
-                                        echo integTestResults.getId()
-                                        echo integTestResults.getNumber()
+                                        echo "${integTestResults.getId()} + test"
+                                        //echo integTestResults.getNumber()
 
                                         env.ARTIFACT_URL_X64_TAR_INTEG_TEST_RESULT = createTestResultsMessage(
                                             testType: "Integ Tests (x64, tar)",
