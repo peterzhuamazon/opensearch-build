@@ -8,8 +8,10 @@ ci:
     name: opensearchstaging/ci-runner:ci-runner-centos7-opensearch-dashboards-build-v2
 components:
   - name: OpenSearch-Dashboards
-    repository: https://github.com/opensearch-project/OpenSearch-Dashboards.git
-    ref: 2.x
+    #repository: https://github.com/opensearch-project/OpenSearch-Dashboards.git
+    #ref: 2.x
+    repository: https://github.com/AMoo-Miki/OpenSearch-Dashboards.git
+    ref: '2.x-windows'
   - name: notificationsDashboards
     repository: https://github.com/opensearch-project/notifications.git
     working_directory: dashboards-notifications
