@@ -124,7 +124,7 @@ if [ "$PLATFORM" != "windows" ]; then
 else
     volta install node@`cat .nvmrc`
     yarn --version || which yarn
-    volta install yarn
+    #volta install yarn
 fi
 
 echo "Building node modules for core with $PLATFORM-$DISTRIBUTION-$ARCHITECTURE"
