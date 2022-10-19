@@ -66,8 +66,8 @@ components:
       - gradle:properties:version
       - gradle:dependencies:opensearch.version: opensearch-ml-plugin
   - name: k-NN
-    repository: https://github.com/opensearch-project/k-NN.git
-    ref: tags/2.3.0.0
+    repository: https://github.com/naveentatikonda/k-NN.git
+    ref: 'windows_support_v4'
     platforms:
       - linux
     checks:
