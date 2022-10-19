@@ -70,6 +70,7 @@ components:
     ref: 'windows_support_v4'
     platforms:
       - linux
+      - windows
     checks:
       - gradle:properties:version
       - gradle:dependencies:opensearch.version
