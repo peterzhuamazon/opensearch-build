@@ -123,6 +123,7 @@ if [ "$PLATFORM" != "windows" ]; then
     nvm use
 else
     volta install node@`cat .nvmrc`
+    yarn --version || which yarn
     volta install yarn
 fi
 
