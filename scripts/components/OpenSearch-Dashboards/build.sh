@@ -90,7 +90,8 @@ case $PLATFORM-$DISTRIBUTION-$ARCHITECTURE in
         SUFFIX="$PLATFORM-arm64"
         ;;
     windows-zip-x64)
-        TARGET="--all-platforms"
+        #TARGET="--all-platforms"
+        TARGET="--windows"
         EXT="$DISTRIBUTION"
         BUILD_PARAMS="build-platform"
         EXTRA_PARAMS="--skip-os-packages"
@@ -123,8 +124,7 @@ if [ "$PLATFORM" != "windows" ]; then
     nvm use
 else
     volta install node@`cat .nvmrc`
-    yarn --version || which yarn
-    #volta install yarn
+    volta install yarn
 fi
 
 echo "Building node modules for core with $PLATFORM-$DISTRIBUTION-$ARCHITECTURE"
