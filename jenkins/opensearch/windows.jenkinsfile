@@ -250,30 +250,38 @@ pipeline {
                     }
                     steps {
                         script {
-                            def buildManifestObj = buildAssembleUpload(
-                                componentName: "${COMPONENT_NAME}",
-                                inputManifest: "manifests/${INPUT_MANIFEST}",
-                                distribution: "zip",
-                                snapshot: true,
-                                platform: "windows"
-                            )
-                            String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
-                            String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
-                            env.ARTIFACT_URL_WINDOWS_X64_ZIP = artifactUrl
-                            env.INDEX_FILE_PATH = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
+                            //def buildManifestObj = buildAssembleUpload(
+                            //    componentName: "${COMPONENT_NAME}",
+                            //    inputManifest: "manifests/${INPUT_MANIFEST}",
+                            //    distribution: "zip",
+                            //    snapshot: true,
+                            //    platform: "windows"
+                            //)
+                            //String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
+                            //String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
+                            //env.ARTIFACT_URL_WINDOWS_X64_ZIP = artifactUrl
+                            //env.INDEX_FILE_PATH = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
-                            echo "buildManifestUrl (windows, x64, zip): ${buildManifestUrl}"
-                            echo "artifactUrl (windows, x64, zip): ${artifactUrl}"
+                            //echo "buildManifestUrl (windows, x64, zip): ${buildManifestUrl}"
+                            //echo "artifactUrl (windows, x64, zip): ${artifactUrl}"
+
+                            sh """
+                                git clone https://github.com/xianyi/OpenBLAS.git
+                                cd OpenBLAS
+                                git checkout v0.3.21
+                                cmake . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON
+                                make -j 8 install
+                            """
 
                         }
                     }
                     post {
                         always {
                             script {
-                                lib.jenkins.Messages.new(this).add(
-                                    "${STAGE_NAME}",
-                                    lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
-                                )
+                                //lib.jenkins.Messages.new(this).add(
+                                //    "${STAGE_NAME}",
+                                //    lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
+                                //)
 
                                 postCleanup()
                             }
