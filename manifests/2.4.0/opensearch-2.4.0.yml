@@ -85,10 +85,11 @@ components:
       - gradle:properties:version
       - gradle:dependencies:opensearch.version: alerting
   - name: k-NN
-    repository: https://github.com/opensearch-project/k-NN.git
-    ref: '2.x'
+    repository: https://github.com/naveentatikonda/k-NN.git
+    ref: 'add_windows_support_2.x_peterzhuamazon'
     platforms:
       - linux
+      - windows
     checks:
       - gradle:properties:version
       - gradle:dependencies:opensearch.version
