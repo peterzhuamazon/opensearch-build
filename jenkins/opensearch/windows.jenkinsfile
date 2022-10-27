@@ -253,9 +253,9 @@ pipeline {
                             alwaysPull true
                         }
                     }
-                    tools {
-                        jdk dockerAgent.javaVersion
-                    }
+                    //tools {
+                    //    jdk dockerAgent.javaVersion
+                    //}
                     steps {
                         script {
                             //sh('scoop install zip')
