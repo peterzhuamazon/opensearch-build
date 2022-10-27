@@ -250,6 +250,7 @@ pipeline {
                     }
                     steps {
                         script {
+                            sh('scoop install zip')
                             def buildManifestObj = buildAssembleUpload(
                                 componentName: "${COMPONENT_NAME}",
                                 inputManifest: "manifests/${INPUT_MANIFEST}",
