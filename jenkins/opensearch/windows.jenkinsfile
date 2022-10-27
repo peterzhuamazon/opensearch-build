@@ -240,9 +240,17 @@ pipeline {
                 //    }
                 //}
                 stage('build-and-test-windows-x64-zip') {
+                    //agent {
+                    //    node {
+                    //        label 'Jenkins-Agent-Windows2019-X64-C54xlarge-Single-Host'
+                    //    }
+                    //}
                     agent {
-                        node {
-                            label 'Jenkins-Agent-Windows2019-X64-C54xlarge-Single-Host'
+                        docker {
+                            label AGENT_X64
+                            image dockerAgent.image
+                            args dockerAgent.args
+                            alwaysPull true
                         }
                     }
                     tools {
@@ -254,9 +262,9 @@ pipeline {
                             def buildManifestObj = buildAssembleUpload(
                                 componentName: "${COMPONENT_NAME}",
                                 inputManifest: "manifests/${INPUT_MANIFEST}",
-                                distribution: "zip",
+                                distribution: "tar",
                                 snapshot: true,
-                                platform: "windows"
+                                platform: "linux"
                             )
                             String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
                             String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
