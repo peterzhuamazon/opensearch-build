@@ -86,7 +86,7 @@ components:
       - gradle:dependencies:opensearch.version: alerting
   - name: k-NN
     repository: https://github.com/naveentatikonda/k-NN.git
-    ref: 'add_windows_support_2.x_peterzhuamazon'
+    ref: 'peterzhuamazon:knn-2.4.0-build-1'
     platforms:
       - linux
       - windows
