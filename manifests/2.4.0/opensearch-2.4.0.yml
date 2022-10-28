@@ -85,8 +85,8 @@ components:
       - gradle:properties:version
       - gradle:dependencies:opensearch.version: alerting
   - name: k-NN
-    repository: https://github.com/naveentatikonda/k-NN.git
-    ref: 'peterzhuamazon:knn-2.4.0-build-1'
+    repository: https://github.com/peterzhuamazon/k-NN.git
+    ref: 'knn-2.4.0-build-1'
     platforms:
       - linux
       - windows
