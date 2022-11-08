@@ -81,9 +81,8 @@ pipeline {
                         set +x
                         set -e
                         for java_version in `env | grep JAVA | grep HOME`; do
-                            echo \$java_version
-                            #java_path="`echo \$java_version | tr '\\' '/' | cut -d= -f2`/bin/java -version"
-                            java_path="`echo \$java_version | tr '\\' '/' | awk -F '=' '{print $2}'`/bin/java -version"
+                            echo JAVA VERSION \$java_version
+                            java_path="`echo \$java_version | tr '\\' '/' | cut -d= -f2`/bin/java -version"
                             eval \$java_path
                         done
                     """
