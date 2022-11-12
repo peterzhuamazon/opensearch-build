@@ -47,6 +47,26 @@ class ServiceOpenSearch(Service):
         self.opensearch_yml_dir = os.path.join(self.dist.config_dir, "opensearch.yml")
         self.security_plugin_dir = os.path.join(self.install_dir, "plugins", "opensearch-security")
 
+        # Additional for sql
+        print("start catalog")
+        self.catalog_json_path = os.path.join(self.install_dir, "catalog.json")
+        self.oskey_cmd = os.path.join("bin","opensearch-keystore.bat") if current_platform() == "windows" else os.path.join("bin","opensearch-keystore")
+        os.system(f"curl -SL https://raw.githubusercontent.com/opensearch-project/sql/2.4/integ-test/src/test/resources/catalog/catalog.json -o {self.catalog_json_path} && ls -l {self.catalog_json_path}")
+        print(f"oskey cmd {self.oskey_cmd}")
+        subprocess.check_call(
+            f"echo y | {self.oskey_cmd} add-file plugins.query.federation.datasources.config catalog.json",
+            shell=True,
+            cwd=self.install_dir,
+        )
+        print("end catalog")
+        subprocess.check_call(
+            f"{self.oskey_cmd} list",
+            shell=True,
+            cwd=self.install_dir,
+        )
+        print("check catalog")
+
+
         if not self.security_enabled and os.path.isdir(self.security_plugin_dir):
             self.__add_plugin_specific_config({"plugins.security.disabled": "true"})
 
