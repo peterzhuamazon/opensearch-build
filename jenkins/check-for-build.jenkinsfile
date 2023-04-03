@@ -58,6 +58,7 @@ pipeline {
                 docker {
                     label AGENT_X64
                     image 'alpine:3'
+                    registryUrl 'https://public.ecr.aws/'
                     alwaysPull true
                 }
             }
@@ -73,11 +74,13 @@ pipeline {
                     label AGENT_X64
                     image dockerAgent.image
                     args dockerAgent.args
+                    registryUrl 'https://public.ecr.aws/'
                     alwaysPull true
                 }
             }
             steps {
                 script {
+                    sh("exit 1")
                     lock(resource: "CheckForBuild-${INPUT_MANIFEST}-${TARGET_JOB_NAME}", skipIfLocked: true) {
                         def sha = getManifestSHA(
                             inputManifest: "manifests/${INPUT_MANIFEST}",
