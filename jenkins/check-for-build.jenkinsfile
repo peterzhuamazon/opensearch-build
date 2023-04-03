@@ -57,7 +57,7 @@ pipeline {
             agent {
                 docker {
                     label AGENT_X64
-                    image 'alpine:3'
+                    image 'docker/library/alpine:3'
                     registryUrl 'https://public.ecr.aws/'
                     alwaysPull true
                 }
