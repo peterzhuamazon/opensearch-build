@@ -65,6 +65,7 @@ pipeline {
             steps {
                 script {
                     dockerAgent = detectDockerAgent()
+                    sh("cat /etc/*release")
                 }
             }
         }
