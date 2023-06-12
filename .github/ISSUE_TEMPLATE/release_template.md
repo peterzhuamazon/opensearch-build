@@ -21,69 +21,125 @@ There are several steps to the release process, these steps are completed as the
 
 Steps have completion dates for coordinating efforts between the components of a release; components can start as soon as they are ready far in advance of a future release.
 
-### Component List
+
+### Plugin List
 
 To aid in understanding the state of the release there is a table with status indicating each component state. This is updated based on the status of the component issues.
 
 </p>
 </details>
 
-### Preparation
+### Preparation - __REPLACE_RELEASE-minus-14-days__
 
-- [ ] Assign this issue to a release owner.
+- [ ] Assign Primary and secondary release managers to OpenSearch release
+    <details><summary>How release managers are assigned to a release?</summary>
+    <p>
+  
+  The release managers to a specific OpenSearch release will be assigned through volunteer model. The request for release managers will be posted in [OpenSearch public slack workspace](https://opensearch.slack.com/archives/C0561HRK961) (under releases channel) and selected on first come first served (FCFS) model. <br>**Note:** The release managers should be maintainers of a repo under OpenSearch GitHub organization.
+  
+  </p>
+  </details>
 - [ ] Declare a pencils down date for new features to be merged. 
 - [ ] __REPLACE_RELEASE-minus-14-days__ is pencils down date for feature freeze.
 - [ ] Update the Campaigns section to include monitoring campaigns during this release. 
 - [ ] Update this issue so all `__REPLACE_RELEASE-__` placeholders have actual dates.
-- [ ] Document any new quality requirements or changes.
-- [ ] Finalize scope and feature set and update [the Public Roadmap](https://github.com/orgs/opensearch-project/projects/1). 
-- [ ] [Create a release issue in every component repo](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#create-an-issue-in-all-plugin-repos) based on [component release issue template](https://github.com/opensearch-project/opensearch-build/blob/main/.github/ISSUE_TEMPLATE/component_release_template.md) and link back to this issue, update Components section with these links.
-- [ ] Ensure the label is created in each component repo for this new version, and the next minor release. [Create a version label](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#create-or-update-labels-in-all-plugin-repos)
+- [ ] Document any new quality requirements or changes (as needed). 
+- [ ] Finalize scope and feature set using [the Public Roadmap](https://github.com/orgs/opensearch-project/projects/1).
+
+    <details><summary>How to get the list of participating plugins?</summary>
+    <p>
+
+  Please use the previous version build manifest to create the build manifest for the upcoming version. Post the plugin list on the manifest in [OpenSearch public slack workspace](https://opensearch.slack.com/archives/C0561HRK961) to get the feedback from repository managers. The repository managers are responsible for providing any new plugins, updating plugin list corresponding to a release to primary release manager.
+
+  </p>
+  </details>
+
+- [ ] [Create a release issue in every component repo](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#create-an-issue-in-all-plugin-repos) based on [component release issue template](https://github.com/opensearch-project/opensearch-build/blob/main/.github/ISSUE_TEMPLATE/component_release_template.md) and link back to this issue, update plugin section with these links.
+- [ ] Ensure the label is created in each plugin repo for this new version, and the next minor release. [Create a version label](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#create-or-update-labels-in-all-plugin-repos)
 - [ ] Ensure that all release issues created above are assigned to an owner in the component team.
 - [ ] Increase the build frequency for the this release from once a day (H 1 * * *) to once every hour (H/60 * * * *) in [jenkinsFile](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/check-for-build.jenkinsfile).
 
-### Campaigns
+### Release Branch - _Ends __REPLACE_RELEASE-minus-10-days__
 
-__REPLACE with OpenSearch wide initiatives to improve quality and consistency.__
+- [ ] Plugin repo versions are auto-incremented to {{ env.VERSION }} version.
+- [ ] Plugins team to merge the version increment PRs after successful CI checks.
+- [ ] [OpenSearch](https://github.com/opensearch-project/OpenSearch/branches) and [OpenSearch-Dashboards](https://github.com/opensearch-project/OpenSearch-dashboards/branches) core create release branch (`<MajorVersion>.<MinorVersion>`).
+- [ ] All plugin repos participating in this release create release branch (`<MajorVersion>.<MinorVersion>`).
 
-### Release Branch - _Ends __REPLACE_RELEASE-minus-14-days__
+    <details><summary>How to ensure that the teams take action in timely manner?</summary>
+    <p>
 
-- [ ] Component versions are auto-incremented to {{ env.VERSION }} version.
-- [ ] Plugins team to ensure working CI in component repositories and merge the version increment PRs.
-- [ ] OpenSearch / OpenSearch-Dashboards core cut branch `<MajorVersion>.<MinorVersion>` early.
-- [ ] All component repos create `<MajorVersion>.<MinorVersion>` branch for the release.
+  The discussions around blockers, gaps will happen in [OpenSearch public slack workspace](https://opensearch.slack.com/archives/C0561HRK961). The primary release manager assigned to a release will tag the secondary release managers, repo managers to get the status update on any pending action item.
 
-### Feature Freeze - _Ends __REPLACE_RELEASE-minus-12-days__
+  </p>
+  </details>
 
-- [ ] OpenSearch / OpenSearch-Dashboards core and components teams finalize their features.
-- [ ] Create Jenkins workflows that run daily snapshot builds for [OpenSearch](https://build.ci.opensearch.org/job/distribution-build-opensearch/) and [OpenSearch Dashboards](https://build.ci.opensearch.org/job/distribution-build-opensearch-dashboards/).
-- [ ] Make pull requests to add each component to [manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml) and [manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml) with the corresponding checks.
+### Build infrastructure readiness - _Ends __REPLACE_RELEASE-minus-9-days__
+- [ ] Create pull requests to add all participating plugin to [manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml) and [manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml) with the corresponding checks.
 
-### Code Complete - _Ends __REPLACE_RELEASE-minus-10-days___
+### Code Complete - _Ends __REPLACE_RELEASE-minus-7-days___
 
-- [ ] Code Complete: Make sure that the code for this specific version of the release is ready and the branch corresponding to this release has been added to this release version manifest.
+- [ ] Make sure that the code for this specific version of the release is ready and the branch corresponding to this release has been updated in the release specific build manifest.
 - [ ] Verify pull requests to add each component to [manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml) and [manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml) have been merged.
-- [ ] Gather, review and combine the release notes from components repositories.
+- [ ] Gather, review and combine the release notes from plugin repositories.
 
 ### Release testing - _Ends __REPLACE_RELEASE-minus-6-days___
 
-- [ ] Declare a release candidate build, and provide the instructions with the release candidates for teams on testing (__REPLACE_RELEASE-minus-8-days__).
-- [ ] Stop builds for this version of OpenSearch and/or OpenSearch Dashboards in order to avoid accidental commits going in unknowingly. Restart only if necessary else manually run the build workflow and declare new release candidate.
-- [ ] After generate the release candidates, raise PR to lock input manifest refs of both OS and OSD builds with the commit ids from distribution manifest of the release candidates.
-- [ ] Sanity Testing (__REPLACE_RELEASE-minus-8-days__ - __REPLACE_RELEASE-minus-6-days__): Sanity testing and fixing of critical issues found by teams. Teams test their components within the distribution, ensuring integration, backwards compatibility, and perf tests pass.
-- [ ] Publish all test results in the comments of this issue.
+- [ ] Declare and broadcast release candidate build along with instructions for performing sanity tests 
 
-### Performance testing validation - _Ends __REPLACE_RELEASE-minus-6-days___
+  <details><summary>How to broadcast release candidate?</summary>
+    <p>
+  
+  Broadcast the release candidate in [OpenSearch public slack workspace](https://opensearch.slack.com/archives/C0561HRK961) and the release GitHub issue using below format to gather votes.
 
-- [ ] Performance tests do not show a regression.
-- [ ] Longevity tests do not show any issues.
+  ##### Please vote for release candidate 1 for OpenSearch <version>
+
+  ######  The artifacts can be downloaded from:
+
+  * OpenSearch - #Build-number (Note: Windows version does not have performance analyzer plugin)
+    * arm64 [[manifest](manifest.yml)] [[tar](opensearch-vesion-linux-arm64.tar.gz)] [[rpm](opensearch-vesion-linux-arm64.rpm)][[deb](opensearch-version-linux-arm64.deb)]
+    * x64 [[manifest](manifest.yml)] [[tar](opensearch-version-linux-x64.tar.gz)] [[rpm](opensearch-version-linux-x64.rpm)] [[deb](opensearch-version-linux-x64.deb)] [[windows](opensearch-version-windows-x64.zip)]
+  * OpenSearch Dashboards - #Build-number
+    * arm64 [[manifest](manifest.yml)] [[tar](opensearch-dashboards-vesion-linux-arm64.tar.gz)] [[rpm](opensearch-dashboards-vesion-linux-arm64.rpm)][[deb](opensearch-dashboards-version-linux-arm64.deb)]
+    * x64 [[manifest](manifest.yml)] [[tar](opensearch-dashboards-version-linux-x64.tar.gz)] [[rpm](opensearch-dashboards-version-linux-x64.rpm)] [[deb](opensearch-dashboards-version-linux-x64.deb)] [[windows](opensearch-dashboards-version-windows-x64.zip)]
+
+   ###### You can execute the tests directly using the below command:
+
+    Testing the Distribution
+      Tests the OpenSearch distribution, including integration, backwards-compatibility and performance tests. <br>
+
+    `./test.sh <test-type> <test-manifest-path> <path>`
+
+  More info on testing the distribution: https://github.com/opensearch-project/opensearch-build/blob/main/README.md#testing-the-distribution
+
+  The vote will be open until next <PLACEHOLDER FOR DAY>, i.e. until [<PLACEHOLDER FOR DATE AND TIME>]
+
+  [ ] +1 approve
+  [ ] +0 no opinion
+  [ ] -1 disapprove (and reason why)
+
+  </p>
+  </details>
+
+- [ ] Stop builds for this version of OpenSearch and/or OpenSearch Dashboards in order to avoid accidental commits by updating OpenSearch [Jenkins file](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/opensearch/distribution-build.jenkinsfile) and OpenSearch dashboards [Jenkins file](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/opensearch-dashboards/distribution-build.jenkinsfile). 
+- [ ] raise PR to lock input manifest refs of both OS and OSD builds with specific commit ids from distribution manifest of the release candidate to lock th commits to the RC build.
+- [ ] Allow the community to sanity test and report critical issues found during testing. **Note**: Teams test their plugins within the distribution, ensuring integration, backwards compatibility, and performance tests.
+- [ ] Execute automated [integration](https://build.ci.opensearch.org/job/integ-test/), [BWC](https://build.ci.opensearch.org/job/bwc-test/) and [performance tests](https://build.ci.opensearch.org/job/perf-test/) for OpenSearch.
+- [ ] Execute automated [integration](https://build.ci.opensearch.org/job/integ-test-opensearch-dashboards/) for OpenSearch dashboards.
+- [ ] Publish all test results in the comments of this release issue.
+
+### Finalize the release candidate
+- [ ] Finalize the release candidate for specific release
+- [ ] Get the Go / No-Go votes from project management committee (PMC)
+- [ ] Stage the release artifacts for production publishing process
 
 ### Release - _Ends {__REPLACE_RELEASE-day}_
 
 - [ ] Verify [all issues labeled `v{{ env.VERSION }}` in all projects](https://github.com/opensearch-project/project-meta#find-labeled-issues) have been resolved.
 - [ ] Complete [documentation](https://github.com/opensearch-project/documentation-website) for this release.
+-  [ ] Publish the release artifacts to all supported distribution channels (i.e. S3, Docker, Yum etc..) using [distribution build promotion workflow](https://build.ci.opensearch.org/job/distribution-promote-artifacts/), [Docker promotion workflow](https://build.ci.opensearch.org/job/docker-promotion/).
+-  [ ] Validate the artifacts in OpenSearch.org [downloads page](https://opensearch.org/downloads)
 - [ ] Author [blog post](https://github.com/opensearch-project/project-website) for this release.
-- [ ] __REPLACE_RELEASE-minus-1-day - Publish this release on [opensearch.org](https://opensearch.org/downloads.html).
 - [ ] __REPLACE_RELEASE-day - Publish a [blog post](https://github.com/opensearch-project/project-website) - release is launched!
 
 ### Post Release
@@ -117,3 +173,13 @@ __Replace with links to all component tracking issues.__
 
 </p>
 </details>
+
+### Campaigns 
+ <details><summary>How to tag OpenSearch campaigns to this section?</summary>
+    <p>
+
+* Filter all the issues tagged to "campaign" along with specific " OpenSearch version label" across all participating GitHub repos and add them to this section. 
+
+   </p>
+
+   </details>
