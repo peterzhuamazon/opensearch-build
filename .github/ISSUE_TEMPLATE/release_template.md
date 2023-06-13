@@ -47,7 +47,6 @@ To aid in understanding the state of the release there is a table with status in
 - [ ] Ensure the label is created in each plugin repo for this new version, and the next minor release. [Create a version label](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#create-or-update-labels-in-all-plugin-repos)
 - [ ] Ensure that all release issues created above are assigned to a release manager in the component team.
 - [ ] Finalize scope and feature set using [the Public Roadmap](https://github.com/orgs/opensearch-project/projects/1).
-
     <details><summary>How to get the list of participating plugins?</summary>
     <p>
 
@@ -63,18 +62,19 @@ To aid in understanding the state of the release there is a table with status in
 
 ### Release Branch - _Ends __REPLACE_RELEASE-minus-10-days__
 
-- [ ] Plugin repo versions are auto-incremented to {{ env.VERSION }} version.
- <details><summary>How to automatically increase plugin versions?</summary>
+- [ ] Plugin versions are auto-incremented to {{ env.VERSION }} version and receive version increment PRs in plugin repositories.
+    <details><summary>How to automatically increase plugin versions and send PRs?</summary>
     <p>
 
   Please contact one of the [opensearch-build repository maintainers](https://github.com/opensearch-project/opensearch-build/blob/main/MAINTAINERS.md) to trigger [OpenSearch Plugin Increment Workflow](https://github.com/opensearch-project/opensearch-build/actions/workflows/os-increment-plugin-versions.yml) and [OpenSearch-Dashboards Plugin Increment Workflow](https://github.com/opensearch-project/opensearch-build/actions/workflows/osd-increment-plugin-versions.yml). These workflows will automatically create PRs to the corresponding plugin repositories. Please make sure all the plugins (See above: How to get the list of participating plugins?) are included in the workflow files of these GitHub Actions.
 
   </p>
   </details>
-- [ ] Plugins team to merge the version increment PRs after successful CI checks.
-- [ ] [OpenSearch](https://github.com/opensearch-project/OpenSearch/branches) and [OpenSearch-Dashboards](https://github.com/opensearch-project/OpenSearch-dashboards/branches) core create release branch (`<MajorVersion>.<MinorVersion>`).
-- [ ] All plugin repos participating in this release create release branch (`<MajorVersion>.<MinorVersion>`).
+  
 
+- [ ] Plugin teams / component release manager to merge the version increment PRs after successful CI checks.
+- [ ] [OpenSearch](https://github.com/opensearch-project/OpenSearch/branches) and [OpenSearch-Dashboards](https://github.com/opensearch-project/OpenSearch-dashboards/branches) core components create release branch (`<MajorVersion>.<MinorVersion>`).
+- [ ] All plugin repos participating in this release create release branch (`<MajorVersion>.<MinorVersion>`).
     <details><summary>How to ensure that the teams take action in timely manner?</summary>
     <p>
 
@@ -82,6 +82,8 @@ To aid in understanding the state of the release there is a table with status in
 
   </p>
   </details>
+  
+- [ ] Primary release manager will be in contact with all component release managers, to ensure that all the components have merged the version increment PRs, cut release branch, and aware of the upcoming new release.
 
 ### Build infrastructure readiness - _Ends __REPLACE_RELEASE-minus-9-days__
 - [ ] Create pull requests to add all participating plugin to [manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml) and [manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml) with the corresponding checks.
