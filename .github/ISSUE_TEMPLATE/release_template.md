@@ -35,29 +35,31 @@ To aid in understanding the state of the release there is a table with status in
     <details><summary>How release managers are assigned to a release?</summary>
     <p>
   
-  The release managers to a specific OpenSearch release will be assigned through volunteer model. The request for release managers will be posted in [OpenSearch public slack workspace](https://opensearch.slack.com/archives/C0561HRK961) (under releases channel) and selected on first come first served (FCFS) model. <br>**Note:** The release managers should be maintainers of a repo under OpenSearch GitHub organization.
+  The primary release managers to a specific OpenSearch release will be assigned through volunteer model. The request for release managers will be posted in [OpenSearch public slack workspace](https://opensearch.slack.com/archives/C0561HRK961) (under releases channel) and selected on first come first served (FCFS) model. <br>**Note:** The release managers should be maintainer of at least one repository under OpenSearch GitHub organization.
   
   </p>
   </details>
-- [ ] Declare a pencils down date for new features to be merged. 
-- [ ] __REPLACE_RELEASE-minus-14-days__ is pencils down date for feature freeze.
+- [ ] Declare a pencils down date (__REPLACE_RELEASE-minus-14-days__) for new features to be merged and freeze.
 - [ ] Update the Campaigns section to include monitoring campaigns during this release. 
 - [ ] Update this issue so all `__REPLACE_RELEASE-__` placeholders have actual dates.
-- [ ] Document any new quality requirements or changes (as needed). 
+- [ ] Document any new quality requirements or changes (as needed) in a comment and update it following the release process. 
+- [ ] [Create a release issue in every component repo](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#create-an-issue-in-all-plugin-repos) based on [component release issue template](https://github.com/opensearch-project/opensearch-build/blob/main/.github/ISSUE_TEMPLATE/component_release_template.md) and link back to this issue, update plugin section with these links.
+- [ ] Ensure the label is created in each plugin repo for this new version, and the next minor release. [Create a version label](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#create-or-update-labels-in-all-plugin-repos)
+- [ ] Ensure that all release issues created above are assigned to a release manager in the component team.
 - [ ] Finalize scope and feature set using [the Public Roadmap](https://github.com/orgs/opensearch-project/projects/1).
 
     <details><summary>How to get the list of participating plugins?</summary>
     <p>
 
-  Please use the previous version build manifest to create the build manifest for the upcoming version. Post the plugin list on the manifest in [OpenSearch public slack workspace](https://opensearch.slack.com/archives/C0561HRK961) to get the feedback from repository managers. The repository managers are responsible for providing any new plugins, updating plugin list corresponding to a release to primary release manager.
+  Please use the previous version [input manifest](https://github.com/opensearch-project/opensearch-build/tree/main/manifests) to create the input manifest for the upcoming version. Post the plugin list on the manifest in [OpenSearch public slack workspace](https://opensearch.slack.com/archives/C0561HRK961) to get the feedback from component release managers. The component release managers are responsible for providing any new plugins, updating plugin list corresponding to a release to primary release manager.
 
   </p>
   </details>
 
-- [ ] [Create a release issue in every component repo](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#create-an-issue-in-all-plugin-repos) based on [component release issue template](https://github.com/opensearch-project/opensearch-build/blob/main/.github/ISSUE_TEMPLATE/component_release_template.md) and link back to this issue, update plugin section with these links.
-- [ ] Ensure the label is created in each plugin repo for this new version, and the next minor release. [Create a version label](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#create-or-update-labels-in-all-plugin-repos)
-- [ ] Ensure that all release issues created above are assigned to an owner in the component team.
-- [ ] Increase the build frequency for the this release from once a day (H 1 * * *) to once every hour (H/60 * * * *) in [jenkinsFile](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/check-for-build.jenkinsfile).
+
+- [ ] Increase the build frequency for the this release from once a day (H 1 * * *) to once every hour (H/60 * * * *) in [check-for-build jenkinsFile](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/check-for-build.jenkinsfile).
+- [ ] Verify the above auto-build is correctly triggered every hour for the corresponding release version.
+- [ ] Contact [opensearch-build repository maintainers](https://github.com/opensearch-project/opensearch-build/blob/main/MAINTAINERS.md) with any questions.
 
 ### Release Branch - _Ends __REPLACE_RELEASE-minus-10-days__
 
