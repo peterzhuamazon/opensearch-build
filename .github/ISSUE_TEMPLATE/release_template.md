@@ -64,6 +64,13 @@ To aid in understanding the state of the release there is a table with status in
 ### Release Branch - _Ends __REPLACE_RELEASE-minus-10-days__
 
 - [ ] Plugin repo versions are auto-incremented to {{ env.VERSION }} version.
+ <details><summary>How to automatically increase plugin versions?</summary>
+    <p>
+
+  Please contact one of the [opensearch-build repository maintainers](https://github.com/opensearch-project/opensearch-build/blob/main/MAINTAINERS.md) to trigger [OpenSearch Plugin Increment Workflow](https://github.com/opensearch-project/opensearch-build/actions/workflows/os-increment-plugin-versions.yml) and [OpenSearch-Dashboards Plugin Increment Workflow](https://github.com/opensearch-project/opensearch-build/actions/workflows/osd-increment-plugin-versions.yml). These workflows will automatically create PRs to the corresponding plugin repositories. Please make sure all the plugins (See above: How to get the list of participating plugins?) are included in the workflow files of these GitHub Actions.
+
+  </p>
+  </details>
 - [ ] Plugins team to merge the version increment PRs after successful CI checks.
 - [ ] [OpenSearch](https://github.com/opensearch-project/OpenSearch/branches) and [OpenSearch-Dashboards](https://github.com/opensearch-project/OpenSearch-dashboards/branches) core create release branch (`<MajorVersion>.<MinorVersion>`).
 - [ ] All plugin repos participating in this release create release branch (`<MajorVersion>.<MinorVersion>`).
