@@ -144,38 +144,35 @@ To aid in understanding the state of the release there is a table with status in
 - [ ] Stop builds for this version of OpenSearch and/or OpenSearch Dashboards in order to avoid accidental commits by updating OpenSearch [Jenkins file](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/opensearch/distribution-build.jenkinsfile) and OpenSearch dashboards [Jenkins file](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/opensearch-dashboards/distribution-build.jenkinsfile) by removing the previously scheduled runs in [check-for-build jenkinsFile](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/check-for-build.jenkinsfile) and send a PR. 
 - [ ] Raise PR to lock input manifest refs of both OS and OSD builds with specific commit ids from distribution manifest of the release candidate to lock the commits to the RC build.
 - [ ] Allow the community to sanity test and report critical issues found during testing. **Note**: Teams test their plugins within the distribution, ensuring integration, backwards compatibility, and performance tests.
+- [ ] PR test manifests commits from previous release, suggest taking examples from at least 2.8.0 version and later.
 - [ ] Execute automated [integration](https://build.ci.opensearch.org/job/integ-test/), [BWC](https://build.ci.opensearch.org/job/bwc-test/) and [performance tests](https://build.ci.opensearch.org/job/perf-test/) for OpenSearch.
 - [ ] Execute automated [integration](https://build.ci.opensearch.org/job/integ-test-opensearch-dashboards/) for OpenSearch dashboards.
 - [ ] Publish all test results in the comments of this release issue.
 
 ### Finalize the release candidate
-- [ ] Finalize the release candidate for specific release
+- [ ] Finalize the release candidate for specific release, confirming all the test results are either passing or manually sign-off by component release manager(s).
 - [ ] Get the Go / No-Go votes from project management committee (PMC)
-- [ ] Stage the release artifacts for production publishing process
 
 ### Release - _Ends {__REPLACE_RELEASE-day}_
-
 - [ ] Verify [all issues labeled `v{{ env.VERSION }}` in all projects](https://github.com/opensearch-project/project-meta#find-labeled-issues) have been resolved.
 - [ ] Complete [documentation](https://github.com/opensearch-project/documentation-website) for this release.
--  [ ] Publish the release artifacts to all supported distribution channels (i.e. S3, Docker, Yum etc..) using [distribution build promotion workflow](https://build.ci.opensearch.org/job/distribution-promote-artifacts/), [Docker promotion workflow](https://build.ci.opensearch.org/job/docker-promotion/).
--  [ ] Validate the artifacts in OpenSearch.org [downloads page](https://opensearch.org/downloads)
+- [ ] Publish the release artifacts to all supported distribution channels (i.e. S3, Docker, Yum etc..) using [distribution build artifacts promotion](https://build.ci.opensearch.org/job/distribution-promote-artifacts/), [distribution build repo promotion](https://build.ci.opensearch.org/job/distribution-promote-repos/), [Docker promotion workflow](https://build.ci.opensearch.org/job/docker-promotion/), [maven publishing](https://build.ci.opensearch.org/job/publish-to-maven/), cloudfront invalidation, with 2-PR process alongside opensearch-build repository maintainers.
+- [ ] Validate the artifacts in OpenSearch.org [downloads page](https://opensearch.org/downloads)
 - [ ] Author [blog post](https://github.com/opensearch-project/project-website) for this release.
-- [ ] __REPLACE_RELEASE-day - Publish a [blog post](https://github.com/opensearch-project/project-website) - release is launched!
+- [ ] Author [documentation updates](https://github.com/opensearch-project/documentation-website) for this release.
+- [ ] __REPLACE_RELEASE-day - Publish to social media and channels - release is launched!
 
 ### Post Release
-
-- [ ] Create [release tags](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/release-tag/release-tag.jenkinsfile) for each component (Jenkins job name: release-tag-creation).
-- [ ] Replace refs in [manifests/{{ env.VERSION }}](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}) with tags and remove checks.
+- [ ] Create [release tags](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/release-tag/release-tag.jenkinsfile) for each component with this [Jenkins workflow](https://build.ci.opensearch.org/job/distribution-release-tag-creation/).
+- [ ] Replace refs in [manifests/{{ env.VERSION }}](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}) with tags (tags/<MajorVersion>.<MinorVersion>.<PatchVersion> for OpenSearch / OpenSearch-Dashboards / functionalTestDashboards, and tags/<MajorVersion>.<MinorVersion>.<PatchVersion>.0 for all other components).
 - [ ] If this is a major or minor version release, stop building previous patch version.
-- [ ] Generate distribution release notes reviewed by PM team for opensearch-build repository.
 - [ ] Increment version for Helm Charts [(sample PR)](https://github.com/opensearch-project/helm-charts/pull/246) for the `{{ env.VERSION }}` release.
 - [ ] Increment version for Ansible Charts [(sample PR)](https://github.com/opensearch-project/ansible-playbook/pull/50) for the `{{ env.VERSION }}` release.
-- [ ] Prepare [for next patch release](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#increment-a-version-in-every-plugin) by incrementing patch versions for each component.
+- [ ] Prepare [for next patch release](https://github.com/opensearch-project/opensearch-plugins/blob/main/META.md#increment-a-version-in-every-plugin) by incrementing patch versions for each component, similar to above steps in `Release Branch`.
 - [ ] Update [this template](https://github.com/opensearch-project/opensearch-build/blob/main/.github/ISSUE_TEMPLATE/release_template.md) with any new or missed steps.
 - [ ] Create an issue for a retrospective, solicit feedback, and publish a summary.
 
 ### Components
-
 __Replace with links to all component tracking issues.__
 
 | Component | On track | Release Notes |
