@@ -99,6 +99,7 @@ To aid in understanding the state of the release there is a table with status in
 - [ ] Sync up with Tech Writers and product managers on the potential highlights of the release, update release-notes PR.
 
 ### Release testing - _Ends __REPLACE_RELEASE-minus-6-days___
+- [ ] Run distribution build of both OpenSearch and OpenSearch-Dashboards Jenkins workflow by specifying `build_docker_with_build_number_tag` option.
 - [ ] Declare and broadcast release candidate build along with instructions for performing sanity tests 
 
   <details><summary>How to broadcast release candidate?</summary>
@@ -125,6 +126,11 @@ To aid in understanding the state of the release there is a table with status in
     `./test.sh <test-type> <test-manifest-path> <path>`
 
   More info on testing the distribution: https://github.com/opensearch-project/opensearch-build/blob/main/README.md#testing-the-distribution
+        
+   ###### You can also execute the tests in Jenkins (more in the following next steps):
+     https://build.ci.opensearch.org/job/integ-test/
+     https://build.ci.opensearch.org/job/integ-test-opensearch-dashboards/
+
 
   The vote will be open until next <PLACEHOLDER FOR DAY>, i.e. until [<PLACEHOLDER FOR DATE AND TIME>]
 
@@ -135,8 +141,8 @@ To aid in understanding the state of the release there is a table with status in
   </p>
   </details>
 
-- [ ] Stop builds for this version of OpenSearch and/or OpenSearch Dashboards in order to avoid accidental commits by updating OpenSearch [Jenkins file](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/opensearch/distribution-build.jenkinsfile) and OpenSearch dashboards [Jenkins file](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/opensearch-dashboards/distribution-build.jenkinsfile). 
-- [ ] raise PR to lock input manifest refs of both OS and OSD builds with specific commit ids from distribution manifest of the release candidate to lock th commits to the RC build.
+- [ ] Stop builds for this version of OpenSearch and/or OpenSearch Dashboards in order to avoid accidental commits by updating OpenSearch [Jenkins file](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/opensearch/distribution-build.jenkinsfile) and OpenSearch dashboards [Jenkins file](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/opensearch-dashboards/distribution-build.jenkinsfile) by removing the previously scheduled runs in [check-for-build jenkinsFile](https://github.com/opensearch-project/opensearch-build/blob/main/jenkins/check-for-build.jenkinsfile) and send a PR. 
+- [ ] Raise PR to lock input manifest refs of both OS and OSD builds with specific commit ids from distribution manifest of the release candidate to lock the commits to the RC build.
 - [ ] Allow the community to sanity test and report critical issues found during testing. **Note**: Teams test their plugins within the distribution, ensuring integration, backwards compatibility, and performance tests.
 - [ ] Execute automated [integration](https://build.ci.opensearch.org/job/integ-test/), [BWC](https://build.ci.opensearch.org/job/bwc-test/) and [performance tests](https://build.ci.opensearch.org/job/perf-test/) for OpenSearch.
 - [ ] Execute automated [integration](https://build.ci.opensearch.org/job/integ-test-opensearch-dashboards/) for OpenSearch dashboards.
