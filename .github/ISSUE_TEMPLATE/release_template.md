@@ -88,12 +88,15 @@ To aid in understanding the state of the release there is a table with status in
 ### Build infrastructure readiness - _Ends __REPLACE_RELEASE-minus-9-days__
 - [ ] Create PRs to add all participating component / plugin to [manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml) and [manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml) with the corresponding checks.
 - [ ] Monitor [distribution-build-opensearch](https://build.ci.opensearch.org/job/distribution-build-opensearch/) and [distribution-build-opensearch-dashboards](https://build.ci.opensearch.org/job/distribution-build-opensearch-dashboards) Jenkins workflows, to ensure the above added plugins are built correctly.
-- [ ] Contact component release owner(s) if any of the participating component showing errors in above workflow runs.
+- [ ] Contact component release manager(s) if any of the participating component showing errors in above workflow runs.
 
 ### Code Complete - _Ends __REPLACE_RELEASE-minus-7-days___
 - [ ] Make sure that the code for this specific version of the release is ready and the branch corresponding to this release has been updated in the release specific build manifest.
+- [ ] Sync up with component release manager of each plugin, to gather current status, and inform everyone about the upcoming code complete and freeze date.
 - [ ] Verify pull requests to add each component to [manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-{{ env.VERSION }}.yml) and [manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml](/opensearch-project/opensearch-build/tree/main/manifests/{{ env.VERSION }}/opensearch-dashboards-{{ env.VERSION }}.yml) have been merged.
-- [ ] Gather, review and combine the release notes from plugin repositories.
+- [ ] Use Jenkins [release-notes-tracker](https://build.ci.opensearch.org/job/release-notes-tracker/) workflow to verify that all the components have updated their release notes in the corresponding `<MajorVersion>.<MinorVersion>` branch.
+- [ ] Use this [release-notes generation tool](https://github.com/opensearch-project/opensearch-build/tree/main/scripts/release-notes) to generate consolidated release notes of all participating components to a rough draft, and create a PR in opensearch-build repository.
+- [ ] Sync up with Tech Writers and product managers on the potential highlights of the release, update release-notes PR.
 
 ### Release testing - _Ends __REPLACE_RELEASE-minus-6-days___
 - [ ] Declare and broadcast release candidate build along with instructions for performing sanity tests 
