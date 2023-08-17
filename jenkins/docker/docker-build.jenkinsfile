@@ -1,3 +1,18 @@
+def docker_images = [
+    "linux": "opensearchstaging/ci-runner:ubuntu2004-x64-docker-buildx0.9.1-qemu5.0-awscli1.22-jdk11-v1",
+    "rpm": "opensearchstaging/ci-runner:ci-runner-windows2019-servercore-opensearch-build-v1"
+]
+
+def docker_args = [
+    "linux": "-u root -v /var/run/docker.sock:/var/run/docker.sock",
+    "windows": "-u ContainerAdministrator -v //./pipe/docker_engine://./pipe/docker_engine"
+]
+
+def agent_nodes = [
+    "x64": "Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host",
+    "arm64": "Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host",
+]
+
 pipeline {
     options {
         timeout(time: 5, unit: 'HOURS')
