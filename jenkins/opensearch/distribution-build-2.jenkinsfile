@@ -800,9 +800,9 @@ pipeline {
                             alwaysPull true
                         }
                     }
-                    tools {
-                        jdk dockerAgent.javaVersion
-                    }
+                    //tools {
+                    //    jdk dockerAgent.javaVersion
+                    //}
                     steps {
                         script {
                             sh("whoami && pwd && date")
