@@ -791,7 +791,7 @@ pipeline {
                     }
                     agent {
                         node {
-                            label 'Jenkins-Agent-Windows2019-X64-C54xlarge-Single-Host'
+                            label 'Jenkins-Agent-Windows2019-X64-C54xlarge-Docker-Host'
                         }
                     }
                     tools {
