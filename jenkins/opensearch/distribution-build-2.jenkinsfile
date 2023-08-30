@@ -812,6 +812,7 @@ pipeline {
                                 whoami
                                 date
                                 echo $0
+                                cat $0
                                 echo 111
 
                             '''
