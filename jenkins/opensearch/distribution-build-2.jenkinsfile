@@ -806,7 +806,7 @@ pipeline {
                     steps {
                         script {
                             echo "Im Inside Windows"
-                            sh "whoami && pwd && date"
+                            sh "echo 123"
                             //def buildManifestObj = buildAssembleUpload(
                             //    componentName: "${COMPONENT_NAME}",
                             //    inputManifest: "manifests/${INPUT_MANIFEST}",
