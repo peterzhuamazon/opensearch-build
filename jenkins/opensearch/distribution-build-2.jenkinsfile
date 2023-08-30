@@ -805,7 +805,8 @@ pipeline {
                     //}
                     steps {
                         script {
-                            sh("whoami && pwd && date")
+                            echo "Im Inside Windows"
+                            //sh("whoami && pwd && date")
                             //def buildManifestObj = buildAssembleUpload(
                             //    componentName: "${COMPONENT_NAME}",
                             //    inputManifest: "manifests/${INPUT_MANIFEST}",
@@ -827,10 +828,10 @@ pipeline {
                     post {
                         always {
                             script {
-                                lib.jenkins.Messages.new(this).add(
-                                    "${STAGE_NAME}",
-                                    lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
-                                )
+                                //lib.jenkins.Messages.new(this).add(
+                                //    "${STAGE_NAME}",
+                                //    lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
+                                //)
 
                                 postCleanup()
                             }
