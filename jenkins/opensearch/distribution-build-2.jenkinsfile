@@ -800,21 +800,14 @@ pipeline {
                             alwaysPull true
                         }
                     }
-                    //tools {
-                    //    jdk dockerAgent.javaVersion
-                    //}
+                    tools {
+                        jdk dockerAgent.javaVersion
+                    }
                     steps {
                         script {
                             echo "Im Inside Windows"
                             sh("whoami && pwd && date")
-                            sh '''#!/bin/bash
-                                echo 123
-                                pwd && whoami
-                                echo $0
-                                cat $0
-                                echo 111
-
-                            '''
+                            sh("java -version && which java")
                             //def buildManifestObj = buildAssembleUpload(
                             //    componentName: "${COMPONENT_NAME}",
                             //    inputManifest: "manifests/${INPUT_MANIFEST}",
