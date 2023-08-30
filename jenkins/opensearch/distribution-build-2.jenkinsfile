@@ -795,7 +795,7 @@ pipeline {
                         docker {
                             label AGENT_WINDOWS_X64
                             image IMAGE_WINDOWS_ZIP
-                            args '-u ContainerAdministrator'
+                            //args '-u ContainerAdministrator'
                             registryUrl 'https://public.ecr.aws/'
                             alwaysPull true
                         }
