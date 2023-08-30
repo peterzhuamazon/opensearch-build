@@ -809,6 +809,7 @@ pipeline {
                             sh '''
                                 echo 123
                                 pwd
+                                whoami
                                 echo 111
 
                             '''
