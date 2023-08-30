@@ -811,7 +811,7 @@ pipeline {
                                 pwd
                                 whoami
                                 date
-                                echo $SHELL
+                                echo $0
                                 echo 111
 
                             '''
