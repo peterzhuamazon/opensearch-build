@@ -810,6 +810,8 @@ pipeline {
                                 echo 123
                                 pwd
                                 whoami
+                                date
+                                echo $SHELL
                                 echo 111
 
                             '''
