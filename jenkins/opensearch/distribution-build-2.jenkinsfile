@@ -806,10 +806,9 @@ pipeline {
                     steps {
                         script {
                             echo "Im Inside Windows"
-                            sh '''
+                            sh '''#!/bin/bash
                                 echo 123
-                                pwd
-                                whoami
+                                pwd && whoami
                                 date
                                 echo $0
                                 cat $0
