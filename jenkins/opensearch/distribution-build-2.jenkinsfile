@@ -800,12 +800,15 @@ pipeline {
                             alwaysPull true
                         }
                     }
-                    tools {
-                        jdk dockerAgent.javaVersion
-                    }
+                    //tools {
+                    //    jdk dockerAgent.javaVersion
+                    //}
                     steps {
                         script {
-                            echo "Im Inside Windows"
+                            def javaVersionNumber = dockerAgent.javaVersion.replace('-', '')
+                            
+                            echo "Switching Java Version on Windows to ${javaVersionWindows}"
+                            sh("scoop reset $javaVersionNumber")
                             sh("whoami && pwd && date")
                             sh("java -version && which java")
                             //def buildManifestObj = buildAssembleUpload(
