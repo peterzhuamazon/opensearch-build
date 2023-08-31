@@ -91,6 +91,7 @@ pipeline {
                     echo("Detect Docker Images and Related Parameters")
                     dockerAgent = detectDockerAgent()
                     currentBuild.description = INPUT_MANIFEST
+                    env.javaVersionNumber = dockerAgent.javaVersion.replaceAll("[^0-9]", "")
 
                     echo("Verify Build Platforms")
                     def build_platform_array = params.BUILD_PLATFORM.tokenize(' ')
@@ -802,8 +803,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            def javaVersionWindows = dockerAgent.javaVersion.replace('-', '')
-                            sh("scoop reset ${javaVersionWindows}")
+                            sh("scoop reset `scoop list jdk | grep ${javaVersionNumber} | head -1`")
                             def buildManifestObj = buildAssembleUpload(
                                 componentName: "${COMPONENT_NAME}",
                                 inputManifest: "manifests/${INPUT_MANIFEST}",
