@@ -800,32 +800,25 @@ pipeline {
                             alwaysPull true
                         }
                     }
-                    //tools {
-                    //    jdk dockerAgent.javaVersion
-                    //}
                     steps {
                         script {
                             def javaVersionWindows = dockerAgent.javaVersion.replace('-', '')
-                            
-                            echo "Switching Java Version on Windows to ${javaVersionWindows}"
-                            sh("scoop reset $javaVersionWindows")
-                            sh("whoami && pwd && date")
-                            sh("java -version && which java")
-                            //def buildManifestObj = buildAssembleUpload(
-                            //    componentName: "${COMPONENT_NAME}",
-                            //    inputManifest: "manifests/${INPUT_MANIFEST}",
-                            //    platform: 'windows',
-                            //    architecture: 'x64',
-                            //    distribution: "zip",
-                            //    continueOnError: params.CONTINUE_ON_ERROR
-                            //)
-                            //String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
-                            //String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
-                            //env.ARTIFACT_URL_LINUX_WINDOWS_X64_ZIP = artifactUrl
-                            //env.INDEX_FILE_PATH = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
+                            sh("scoop reset ${javaVersionWindows}")
+                            def buildManifestObj = buildAssembleUpload(
+                                componentName: "${COMPONENT_NAME}",
+                                inputManifest: "manifests/${INPUT_MANIFEST}",
+                                platform: 'windows',
+                                architecture: 'x64',
+                                distribution: "zip",
+                                continueOnError: params.CONTINUE_ON_ERROR
+                            )
+                            String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
+                            String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
+                            env.ARTIFACT_URL_LINUX_WINDOWS_X64_ZIP = artifactUrl
+                            env.INDEX_FILE_PATH = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
-                            //echo "buildManifestUrl (windows, x64, zip): ${buildManifestUrl}"
-                            //echo "artifactUrl (windows, x64, zip): ${artifactUrl}"
+                            echo "buildManifestUrl (windows, x64, zip): ${buildManifestUrl}"
+                            echo "artifactUrl (windows, x64, zip): ${artifactUrl}"
 
                         }
                     }
