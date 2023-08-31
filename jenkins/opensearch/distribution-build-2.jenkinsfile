@@ -805,7 +805,7 @@ pipeline {
                     //}
                     steps {
                         script {
-                            def javaVersionNumber = dockerAgent.javaVersion.replace('-', '')
+                            def javaVersionWindows = dockerAgent.javaVersion.replace('-', '')
                             
                             echo "Switching Java Version on Windows to ${javaVersionWindows}"
                             sh("scoop reset $javaVersionNumber")
