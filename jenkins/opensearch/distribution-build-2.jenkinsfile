@@ -804,7 +804,7 @@ pipeline {
                         script {
                             def javaVersionNumber = dockerAgent.javaVersion.replaceAll("[^0-9]", "")
                             sh """
-                                scoop reset `scoop list jdk | awk '{print $1}' | grep ${javaVersionNumber} | head -1`
+                                scoop reset `scoop list jdk | awk \'{print $1}\' | grep ${javaVersionNumber} | head -1`
                             """
                             def buildManifestObj = buildAssembleUpload(
                                 componentName: "${COMPONENT_NAME}",
