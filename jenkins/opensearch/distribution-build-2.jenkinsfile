@@ -112,6 +112,36 @@ pipeline {
                 }
             }
         }
+        stage('preload-windows-images') {
+            when {
+                beforeAgent true
+                expression{
+                    params.BUILD_PLATFORM.contains('windows')
+                }
+            }
+            agent {
+                docker {
+                    label AGENT_WINDOWS_X64
+                    image IMAGE_WINDOWS_ZIP
+                    //args '-u ContainerAdministrator'
+                    registryUrl 'https://public.ecr.aws/'
+                    alwaysPull true
+                }
+            }
+            steps {
+                script {
+                    env.javaVersionNumber = dockerAgent.javaVersion.replaceAll("[^0-9]", "")
+                    echo("javaVersionNumber ${env.javaVersionNumber}")
+                }
+            }
+            post {
+                always {
+                    script {
+                        postCleanup()
+                    }
+                }
+            }
+        }
         stage('build') {
             parallel {
                 //stage('build-opensearch-snapshot-linux-x64-tar') {
@@ -802,10 +832,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            def javaVersionNumber = dockerAgent.javaVersion.replaceAll("[^0-9]", "")
-                            // Initializing sh on new windows container so it will not crash on 1st run
-                            sh("set +e; echo Initializing || echo Try Again")
-                            sh("scoop reset `scoop list jdk | grep ${javaVersionNumber} | head -1 | cut -d ' ' -f1`")
+                            sh("scoop reset `scoop list jdk | grep ${env.javaVersionNumber} | head -1 | cut -d ' ' -f1`")
                             def buildManifestObj = buildAssembleUpload(
                                 componentName: "${COMPONENT_NAME}",
                                 inputManifest: "manifests/${INPUT_MANIFEST}",
