@@ -9,8 +9,8 @@ pipeline {
     }
     agent none
     environment {
-        AGENT_LINUX_X64 = 'Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host'
-        AGENT_LINUX_ARM64 = 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host'
+        AGENT_LINUX_X64 = 'Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host'
+        AGENT_LINUX_ARM64 = 'Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Docker-Host'
         AGENT_WINDOWS_X64 = 'Jenkins-Agent-Windows2019-X64-C54xlarge-Docker-Host'
         IMAGE_LINUX_RPM = 'opensearchstaging/ci-runner:ci-runner-rockylinux8-opensearch-build-v3' // required for rpm to create digest sha256 correctly with rpm 4.12+
         IMAGE_LINUX_DEB = 'opensearchstaging/ci-runner:ci-runner-ubuntu2004-opensearch-build-v2' // required for deb to create pkg using debmake/debuild/debhelper
@@ -113,80 +113,50 @@ pipeline {
                 }
             }
         }
-        //stage('preload-windows-images') {
-        //    when {
-        //        beforeAgent true
-        //        expression{
-        //            params.BUILD_PLATFORM.contains('windows')
-        //        }
-        //    }
-        //    agent {
-        //        docker {
-        //            label AGENT_WINDOWS_X64
-        //            image IMAGE_WINDOWS_ZIP
-        //            //args '-u ContainerAdministrator'
-        //            registryUrl 'https://public.ecr.aws/'
-        //            alwaysPull true
-        //        }
-        //    }
-        //    steps {
-        //        script {
-        //            env.javaVersionNumber = dockerAgent.javaVersion.replaceAll("[^0-9]", "")
-        //            echo("javaVersionNumber ${env.javaVersionNumber}")
-        //        }
-        //    }
-        //    post {
-        //        always {
-        //            script {
-        //                postCleanup()
-        //            }
-        //        }
-        //    }
-        //}
         stage('build') {
             parallel {
-                //stage('build-opensearch-snapshot-linux-x64-tar') {
-                //    when {
-                //        beforeAgent true
-                //        expression{
-                //            params.BUILD_PLATFORM.contains('linux')
-                //        }
-                //    }
-                //    environment {
-                //        SNAPSHOT_REPO_URL = "https://aws.oss.sonatype.org/content/repositories/snapshots/"
-                //    }
-                //    agent {
-                //        docker {
-                //            label AGENT_LINUX_X64
-                //            image dockerAgent.image
-                //            args dockerAgent.args
-                //            registryUrl 'https://public.ecr.aws/'
-                //            alwaysPull true
-                //        }
-                //    }
-                //    steps {
-                //        script {
-                //            buildManifest(
-                //                componentName: "OpenSearch",
-                //                inputManifest: "manifests/${INPUT_MANIFEST}",
-                //                platform: 'linux',
-                //                architecture: 'x64',
-                //                distribution: 'tar',
-                //                snapshot: true
-                //            )
-                //            echo("Uploading min snapshots to S3")
-                //            uploadMinSnapshotsToS3(
-                //                fileActions: [createSha512Checksums()],
-                //                distribution: 'tar'
-                //            )
-                //        }
-                //    }
-                //    post {
-                //        always {
-                //            postCleanup()
-                //        }
-                //    }
-                //}
+                stage('build-opensearch-snapshot-linux-x64-tar') {
+                    when {
+                        beforeAgent true
+                        expression{
+                            params.BUILD_PLATFORM.contains('linux')
+                        }
+                    }
+                    environment {
+                        SNAPSHOT_REPO_URL = "https://aws.oss.sonatype.org/content/repositories/snapshots/"
+                    }
+                    agent {
+                        docker {
+                            label AGENT_LINUX_X64
+                            image dockerAgent.image
+                            args dockerAgent.args
+                            registryUrl 'https://public.ecr.aws/'
+                            alwaysPull true
+                        }
+                    }
+                    steps {
+                        script {
+                            buildManifest(
+                                componentName: "OpenSearch",
+                                inputManifest: "manifests/${INPUT_MANIFEST}",
+                                platform: 'linux',
+                                architecture: 'x64',
+                                distribution: 'tar',
+                                snapshot: true
+                            )
+                            echo("Uploading min snapshots to S3")
+                            uploadMinSnapshotsToS3(
+                                fileActions: [createSha512Checksums()],
+                                distribution: 'tar'
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            postCleanup()
+                        }
+                    }
+                }
                 //stage('build-opensearch-snapshot-linux-arm64-tar') {
                 //    when {
                 //        beforeAgent true
