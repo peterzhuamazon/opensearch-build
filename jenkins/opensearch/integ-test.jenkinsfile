@@ -219,13 +219,13 @@ pipeline {
                                 docker.withRegistry('https://public.ecr.aws/') {
                                     docker.image(docker_images["$distribution"]).inside(docker_args["$distribution"]) {
                                         unstash "integtest-opensearch-$BUILD_NUMBER"
-                                        createUploadTestReportManifest(
-                                            testManifest: "manifests/${TEST_MANIFEST}",
-                                            buildManifest: BUILD_MANIFEST,
-                                            testRunID: "${env.BUILD_NUMBER}",
-                                            testType: "integ-test",
-                                            componentName: "${COMPONENT_NAME}",
-                                        )
+                                        //createUploadTestReportManifest(
+                                        //    testManifest: "manifests/${TEST_MANIFEST}",
+                                        //    buildManifest: BUILD_MANIFEST,
+                                        //    testRunID: "${env.BUILD_NUMBER}",
+                                        //    testType: "integ-test",
+                                        //    componentName: "${COMPONENT_NAME}",
+                                        //)
                                     }
                                 }
                             }
@@ -240,14 +240,14 @@ pipeline {
         success {
             node(AGENT_LABEL) {
                 script {
-                    def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
-                    publishNotification(
-                        icon: ':white_check_mark:',
-                        message: 'Integration Tests Successful',
-                        extra: stashed,
-                        credentialsId: 'jenkins-integ-test-webhook',
-                        manifest: TEST_MANIFEST,
-                    )
+                    //def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
+                    //publishNotification(
+                    //    icon: ':white_check_mark:',
+                    //    message: 'Integration Tests Successful',
+                    //    extra: stashed,
+                    //    credentialsId: 'jenkins-integ-test-webhook',
+                    //    manifest: TEST_MANIFEST,
+                    //)
 
                     postCleanup()
                 }
@@ -256,14 +256,14 @@ pipeline {
         failure {
             node(AGENT_LABEL) {
                 script  {
-                    def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
-                    publishNotification(
-                        icon: ':warning:',
-                        message: 'Failed Integration Tests',
-                        extra: stashed,
-                        credentialsId: 'jenkins-integ-test-webhook',
-                        manifest: TEST_MANIFEST,
-                    )
+                    //def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
+                    //publishNotification(
+                    //    icon: ':warning:',
+                    //    message: 'Failed Integration Tests',
+                    //    extra: stashed,
+                    //    credentialsId: 'jenkins-integ-test-webhook',
+                    //    manifest: TEST_MANIFEST,
+                    //)
 
                     postCleanup()
                 }
