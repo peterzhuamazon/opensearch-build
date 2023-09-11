@@ -143,7 +143,7 @@ pipeline {
                     // Unstash later in each triggered stage to run integTest
                     stash includes: "**", name: "integtest-opensearch-$BUILD_NUMBER"
 
-                    env.componentTests = [:]
+                    componentTests = [:]
 
                     for (component in componentList) {
                         // Must use local variable due to groovy for loop and closure scope
