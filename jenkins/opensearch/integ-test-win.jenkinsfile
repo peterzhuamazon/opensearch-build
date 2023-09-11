@@ -103,10 +103,10 @@ pipeline {
                 }
             }
         }
-        stage('integ-test-preparation') {
+        stage('integ-test') {
             // Need to run this directly on agent node here in order to trigger stages with docker container and avoid docker within docker situation
             // Can only be run in runner that is at least 50GB per container
-            agent { label agent_nodes["linux_x64"] }
+            agent { label AGENT_LABEL }
             steps {
                 script {
 
@@ -143,7 +143,7 @@ pipeline {
                     // Unstash later in each triggered stage to run integTest
                     stash includes: "**", name: "integtest-opensearch-$BUILD_NUMBER"
 
-                    env.componentTests = [:]
+                    componentTests = [:]
 
                     for (component in componentList) {
                         // Must use local variable due to groovy for loop and closure scope
@@ -197,10 +197,10 @@ pipeline {
                                                 throw new Exception("Error running integtest for component ${local_component}", e)
                                             } finally {
                                                 echo "Completed running integtest for component ${local_component}"
-                                                //uploadTestResults(
-                                                //    buildManifestFileName: BUILD_MANIFEST,
-                                                //    jobName: JOB_NAME
-                                                //)
+                                                uploadTestResults(
+                                                    buildManifestFileName: BUILD_MANIFEST,
+                                                    jobName: JOB_NAME
+                                                )
                                                 postCleanup()
                                             }
                                         }
@@ -209,57 +209,33 @@ pipeline {
                             }
                         }
                     }
-                    //parallel componentTests
+                    parallel componentTests
                 }
             }
             post {
                 always {
-                    script {
-                        unstash "integtest-opensearch-$BUILD_NUMBER"
-                        //createUploadTestReportManifest(
-                        //    testManifest: "manifests/${TEST_MANIFEST}",
-                        //    buildManifest: BUILD_MANIFEST,
-                        //    testRunID: "${env.BUILD_NUMBER}",
-                        //    testType: "integ-test",
-                        //    componentName: "${COMPONENT_NAME}",
-                        //)
-                    }
-                    postCleanup()
-                }
-            }
-        }
-        stage('integ-test-run') {
-            agent { label AGENT_LABEL}
-            steps {
-                script {
-
-                    //downloadBuildManifest(
-                    //    url: BUILD_MANIFEST_URL,
-                    //    path: BUILD_MANIFEST
-                    //)
-
-                    //def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST))
-                    ////def componentList = COMPONENT_NAME ? COMPONENT_NAME.trim().split(" ") as List : buildManifestObj.getNames()
-                    //env.architecture = buildManifestObj.getArtifactArchitecture()
-                    //env.platform = buildManifestObj.getArtifactPlatform()
-                    //env.buildId = buildManifestObj.getArtifactBuildId()
-                    //env.distribution = buildManifestObj.getDistribution()
-                    //env.version = buildManifestObj.build.version
-                    //env.platform = buildManifestObj.build.platform
-                    //env.artifactPath = buildManifestObj.getArtifactRoot(BUILD_JOB_NAME, buildId)
-                    //env.AGENT_LABEL = agent_nodes["${env.platform}_${architecture}"]
-
-                    parallel env.componentTests
-
-                }
-            }
-            post {
-                always {
+                        script {
+                            node(AGENT_LABEL) {
+                                docker.withRegistry('https://public.ecr.aws/') {
+                                    docker.image(docker_images["$distribution"]).inside(docker_args["$distribution"]) {
+                                        unstash "integtest-opensearch-$BUILD_NUMBER"
+                                        //createUploadTestReportManifest(
+                                        //    testManifest: "manifests/${TEST_MANIFEST}",
+                                        //    buildManifest: BUILD_MANIFEST,
+                                        //    testRunID: "${env.BUILD_NUMBER}",
+                                        //    testType: "integ-test",
+                                        //    componentName: "${COMPONENT_NAME}",
+                                        //)
+                                    }
+                                }
+                            }
+                        }
                     postCleanup()
                 }
             }
         }
     }
+
     post {
         success {
             node(AGENT_LABEL) {
