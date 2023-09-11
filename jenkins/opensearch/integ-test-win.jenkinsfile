@@ -137,7 +137,7 @@ pipeline {
                         localPath: "${WORKSPACE}/artifacts",
                         force: true
                       )
-                    sh("mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
+                    sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
 
                     // Stash the current working directory files, aka opensearch-build repo
                     // Unstash later in each triggered stage to run integTest
