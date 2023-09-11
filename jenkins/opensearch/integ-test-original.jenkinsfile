@@ -1,31 +1,23 @@
-lib = library(identifier: 'jenkins@windows-docker-integtest', retriever: modernSCM([
+lib = library(identifier: 'jenkins@5.7.1', retriever: modernSCM([
     $class: 'GitSCMSource',
-    remote: 'https://github.com/peterzhuamazon/opensearch-build-libraries.git',
+    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
 ]))
 
-//lib = library(identifier: 'jenkins@5.7.1', retriever: modernSCM([
-//    $class: 'GitSCMSource',
-//    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
-//]))
-
 def docker_images = [
-    "tar": "opensearchstaging/ci-runner:ci-runner-rockylinux8-opensearch-build-v4",
+    "tar": "opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v3",
     "rpm": "opensearchstaging/ci-runner:ci-runner-rockylinux8-systemd-base-integtest-v3",
     "deb": "opensearchstaging/ci-runner:ci-runner-ubuntu2004-systemd-base-integtest-v3",
-    "zip": "opensearchstaging/ci-runner-windows2019-servercore-opensearch-build-v1",
 ]
 
 def docker_args = [
     "tar": "-u 1000",
     "rpm": "--entrypoint=/usr/sbin/init -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro",
     "deb": "--entrypoint=/usr/sbin/init -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro",
-    "zip": "-u ContainerAdministrator",
 ]
 
 def agent_nodes = [
-    "linux_x64": "Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host",
-    "linux_arm64": "Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Docker-Host",
-    "windows_x64": "Jenkins-Agent-Windows2019-X64-C54xlarge-Docker-Host",
+    "x64": "Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host",
+    "arm64": "Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Docker-Host",
 ]
 
 pipeline {
@@ -39,12 +31,12 @@ pipeline {
         BUILD_JOB_NAME = "distribution-build-opensearch"
         ARTIFACT_BUCKET_NAME = credentials('jenkins-artifact-bucket-name')
     }
-    //triggers {
-    //    parameterizedCron '''
-    //        H 3 * * * %TEST_MANIFEST=2.10.0/opensearch-2.10.0-concurrent-search-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/arm64/tar/builds/opensearch/manifest.yml
-    //        H 3 * * * %TEST_MANIFEST=2.10.0/opensearch-2.10.0-concurrent-search-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/x64/tar/builds/opensearch/manifest.yml
-    //        '''
-    //}
+    triggers {
+        parameterizedCron '''
+            H 3 * * * %TEST_MANIFEST=2.10.0/opensearch-2.10.0-concurrent-search-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/arm64/tar/builds/opensearch/manifest.yml
+            H 3 * * * %TEST_MANIFEST=2.10.0/opensearch-2.10.0-concurrent-search-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/x64/tar/builds/opensearch/manifest.yml
+            '''
+    }
     parameters {
         string(
             name: 'COMPONENT_NAME',
@@ -64,7 +56,7 @@ pipeline {
     }
     stages {
         stage('verify-parameters') {
-            agent { label agent_nodes["linux_x64"]}
+            agent { label agent_nodes["x64"]}
             steps {
                 script {
                     if (TEST_MANIFEST == '' || !fileExists("manifests/${TEST_MANIFEST}")) {
@@ -85,16 +77,15 @@ pipeline {
                     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST))
                     def componentList = COMPONENT_NAME ? COMPONENT_NAME.trim().split(" ") as List : buildManifestObj.getNames()
                     env.architecture = buildManifestObj.getArtifactArchitecture()
-                    env.platform = buildManifestObj.getArtifactPlatform()
                     env.buildId = buildManifestObj.getArtifactBuildId()
                     env.distribution = buildManifestObj.getDistribution()
                     env.version = buildManifestObj.build.version
                     env.platform = buildManifestObj.build.platform
                     env.artifactPath = buildManifestObj.getArtifactRoot(BUILD_JOB_NAME, buildId)
-                    env.AGENT_LABEL = agent_nodes["${env.platform}_${architecture}"]
+                    env.AGENT_LABEL = agent_nodes["$architecture"]
 
                     echo "Version: ${version}, Agent: ${AGENT_LABEL}, BuildId: ${buildId}, Distribution: ${distribution}, Components: ${componentList}"
-                    currentBuild.description = "$TEST_MANIFEST, $version, $architecture, $platform, $buildId, $distribution, $componentList"
+                    currentBuild.description = "$TEST_MANIFEST, $version, $architecture, $buildId, $distribution, $componentList"
                 }
             }
             post {
@@ -103,10 +94,10 @@ pipeline {
                 }
             }
         }
-        stage('integ-test-preparation') {
+        stage('integ-test') {
             // Need to run this directly on agent node here in order to trigger stages with docker container and avoid docker within docker situation
             // Can only be run in runner that is at least 50GB per container
-            agent { label agent_nodes["linux_x64"] }
+            agent { label AGENT_LABEL }
             steps {
                 script {
 
@@ -177,30 +168,30 @@ pipeline {
                                                         localPath: "${WORKSPACE}/${distribution}",
                                                         switchUserNonRoot: "${switch_user_non_root}"
                                                     )
-                                                    //String closeCommentMessage = "Closing the issue as the Integration Test passed for ${local_component}<br>Version: ${version}<br>Distribution: ${distribution}<br>Architecture: ${architecture}<br>Platform: ${platform}<br><br>Please check the logs: ${RUN_DISPLAY_URL}<br><br> *"
-                                                    //closeGithubIssue(
-                                                    //    repoUrl: buildManifestObj.getRepo("${local_component}"),
-                                                    //    issueTitle: "[AUTOCUT] Integration Test failed for ${local_component}: ${version} ${distribution} distribution",
-                                                    //    closeComment: closeCommentMessage,
-                                                    //    label: "autocut,v${version},integ-test-failure"
-                                                    //)
+                                                    String closeCommentMessage = "Closing the issue as the Integration Test passed for ${local_component}<br>Version: ${version}<br>Distribution: ${distribution}<br>Architecture: ${architecture}<br>Platform: ${platform}<br><br>Please check the logs: ${RUN_DISPLAY_URL}<br><br> *"
+                                                    closeGithubIssue(
+                                                        repoUrl: buildManifestObj.getRepo("${local_component}"),
+                                                        issueTitle: "[AUTOCUT] Integration Test failed for ${local_component}: ${version} ${distribution} distribution",
+                                                        closeComment: closeCommentMessage,
+                                                        label: "autocut,v${version},integ-test-failure"
+                                                    )
                                                 }
                                             } catch (e) {
                                                 echo "Error running integtest for component ${local_component}, creating Github issue"
-                                                //String issueBodyMessage = "The integration test failed at distribution level for component ${local_component}<br>Version: ${version}<br>Distribution: ${distribution}<br>Architecture: ${architecture}<br>Platform: ${platform}<br><br>Please check the logs: ${RUN_DISPLAY_URL}<br><br> * Test-report manifest:*<br> - https://ci.opensearch.org/ci/dbc/${JOB_NAME}/${version}/${buildId}/${platform}/${architecture}/${distribution}/test-results/${BUILD_NUMBER}/integ-test/test-report.yml <br><br> _Note: Steps to reproduce, additional logs and other files can be found within the above test-report manifest._"
-                                                //createGithubIssue(
-                                                //    repoUrl: buildManifestObj.getRepo("${local_component}"),
-                                                //    issueTitle: "[AUTOCUT] Integration Test failed for ${local_component}: ${version} ${distribution} distribution",
-                                                //    issueBody: issueBodyMessage,
-                                                //    label: "autocut,v${version},integ-test-failure"
-                                                //)
+                                                String issueBodyMessage = "The integration test failed at distribution level for component ${local_component}<br>Version: ${version}<br>Distribution: ${distribution}<br>Architecture: ${architecture}<br>Platform: ${platform}<br><br>Please check the logs: ${RUN_DISPLAY_URL}<br><br> * Test-report manifest:*<br> - https://ci.opensearch.org/ci/dbc/${JOB_NAME}/${version}/${buildId}/${platform}/${architecture}/${distribution}/test-results/${BUILD_NUMBER}/integ-test/test-report.yml <br><br> _Note: Steps to reproduce, additional logs and other files can be found within the above test-report manifest._"
+                                                createGithubIssue(
+                                                    repoUrl: buildManifestObj.getRepo("${local_component}"),
+                                                    issueTitle: "[AUTOCUT] Integration Test failed for ${local_component}: ${version} ${distribution} distribution",
+                                                    issueBody: issueBodyMessage,
+                                                    label: "autocut,v${version},integ-test-failure"
+                                                )
                                                 throw new Exception("Error running integtest for component ${local_component}", e)
                                             } finally {
                                                 echo "Completed running integtest for component ${local_component}"
-                                                //uploadTestResults(
-                                                //    buildManifestFileName: BUILD_MANIFEST,
-                                                //    jobName: JOB_NAME
-                                                //)
+                                                uploadTestResults(
+                                                    buildManifestFileName: BUILD_MANIFEST,
+                                                    jobName: JOB_NAME
+                                                )
                                                 postCleanup()
                                             }
                                         }
@@ -209,69 +200,45 @@ pipeline {
                             }
                         }
                     }
-                    //parallel componentTests
+                    parallel componentTests
                 }
             }
             post {
                 always {
-                    script {
-                        //unstash "integtest-opensearch-$BUILD_NUMBER"
-                        //createUploadTestReportManifest(
-                        //    testManifest: "manifests/${TEST_MANIFEST}",
-                        //    buildManifest: BUILD_MANIFEST,
-                        //    testRunID: "${env.BUILD_NUMBER}",
-                        //    testType: "integ-test",
-                        //    componentName: "${COMPONENT_NAME}",
-                        //)
-                    }
+                        script {
+                            node(AGENT_LABEL) {
+                                docker.withRegistry('https://public.ecr.aws/') {
+                                    docker.image(docker_images["$distribution"]).inside(docker_args["$distribution"]) {
+                                        unstash "integtest-opensearch-$BUILD_NUMBER"
+                                        createUploadTestReportManifest(
+                                            testManifest: "manifests/${TEST_MANIFEST}",
+                                            buildManifest: BUILD_MANIFEST,
+                                            testRunID: "${env.BUILD_NUMBER}",
+                                            testType: "integ-test",
+                                            componentName: "${COMPONENT_NAME}",
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     postCleanup()
                 }
             }
         }
-        //stage('integ-test-run') {
-        //    agent { label AGENT_LABEL}
-        //    steps {
-        //        script {
-
-        //            //downloadBuildManifest(
-        //            //    url: BUILD_MANIFEST_URL,
-        //            //    path: BUILD_MANIFEST
-        //            //)
-
-        //            //def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST))
-        //            ////def componentList = COMPONENT_NAME ? COMPONENT_NAME.trim().split(" ") as List : buildManifestObj.getNames()
-        //            //env.architecture = buildManifestObj.getArtifactArchitecture()
-        //            //env.platform = buildManifestObj.getArtifactPlatform()
-        //            //env.buildId = buildManifestObj.getArtifactBuildId()
-        //            //env.distribution = buildManifestObj.getDistribution()
-        //            //env.version = buildManifestObj.build.version
-        //            //env.platform = buildManifestObj.build.platform
-        //            //env.artifactPath = buildManifestObj.getArtifactRoot(BUILD_JOB_NAME, buildId)
-        //            //env.AGENT_LABEL = agent_nodes["${env.platform}_${architecture}"]
-
-        //            parallel env.componentTests
-
-        //        }
-        //    }
-        //    post {
-        //        always {
-        //            postCleanup()
-        //        }
-        //    }
-        //}
     }
+
     post {
         success {
             node(AGENT_LABEL) {
                 script {
-                    //def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
-                    //publishNotification(
-                    //    icon: ':white_check_mark:',
-                    //    message: 'Integration Tests Successful',
-                    //    extra: stashed,
-                    //    credentialsId: 'jenkins-integ-test-webhook',
-                    //    manifest: TEST_MANIFEST,
-                    //)
+                    def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
+                    publishNotification(
+                        icon: ':white_check_mark:',
+                        message: 'Integration Tests Successful',
+                        extra: stashed,
+                        credentialsId: 'jenkins-integ-test-webhook',
+                        manifest: TEST_MANIFEST,
+                    )
 
                     postCleanup()
                 }
@@ -280,14 +247,14 @@ pipeline {
         failure {
             node(AGENT_LABEL) {
                 script  {
-                    //def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
-                    //publishNotification(
-                    //    icon: ':warning:',
-                    //    message: 'Failed Integration Tests',
-                    //    extra: stashed,
-                    //    credentialsId: 'jenkins-integ-test-webhook',
-                    //    manifest: TEST_MANIFEST,
-                    //)
+                    def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
+                    publishNotification(
+                        icon: ':warning:',
+                        message: 'Failed Integration Tests',
+                        extra: stashed,
+                        credentialsId: 'jenkins-integ-test-webhook',
+                        manifest: TEST_MANIFEST,
+                    )
 
                     postCleanup()
                 }
