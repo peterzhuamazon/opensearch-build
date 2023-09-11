@@ -109,9 +109,9 @@ pipeline {
             agent { label AGENT_LABEL }
             steps {
                 script{
-                    node(AGENT_LABEL) {
+                    node(agent_nodes["linux_x64"]) {
                         docker.withRegistry('https://public.ecr.aws/') {
-                            docker.image(docker_images["$distribution"]).inside(docker_args["$distribution"]) {
+                            docker.image(docker_images["tar"]).inside(docker_args["tar"]) {
 
                                 downloadBuildManifest(
                                     url: BUILD_MANIFEST_URL,
@@ -200,10 +200,10 @@ pipeline {
                                                             throw new Exception("Error running integtest for component ${local_component}", e)
                                                         } finally {
                                                             echo "Completed running integtest for component ${local_component}"
-                                                            uploadTestResults(
-                                                                buildManifestFileName: BUILD_MANIFEST,
-                                                                jobName: JOB_NAME
-                                                            )
+                                                            //uploadTestResults(
+                                                            //    buildManifestFileName: BUILD_MANIFEST,
+                                                            //    jobName: JOB_NAME
+                                                            //)
                                                             postCleanup()
                                                         }
                                                     }
