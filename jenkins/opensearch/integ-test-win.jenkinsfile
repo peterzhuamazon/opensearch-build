@@ -131,7 +131,7 @@ pipeline {
                                     }
                                 }
 
-                                if (! "$platform".equals('windows')) {
+                                if (env.platform != 'windows') {
                                     echo("Not on Windows, only download artifacts once and stash to distribute")
                                     echo "Downloading from S3: ${artifactPath}"
                                     downloadFromS3(
@@ -175,7 +175,7 @@ pipeline {
                                                                 sh("echo ${local_component} with index ${local_component_index} will sleep ${wait_seconds} seconds to reduce load && sleep ${wait_seconds}")
                                                                 // Unstash repo+artifacts on non-windows and unstash repo only on windows
                                                                 unstash "integtest-opensearch-$BUILD_NUMBER"
-                                                                if ("$platform".equals('windows')) {
+                                                                if (env.platform == 'windows') {
                                                                     echo("On Windows Platform, actively download artifacts on all containers")
                                                                     echo "Downloading from S3: ${artifactPath}"
                                                                     downloadFromS3(
