@@ -142,7 +142,7 @@ pipeline {
                                         localPath: "${WORKSPACE}/artifacts",
                                         force: true
                                       )
-                                    sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
+                                    sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE && ls -l $WORKSPACE")
                                 }
 
                                 // Stash the current working directory files, aka opensearch-build repo
@@ -173,6 +173,8 @@ pipeline {
                                                                 // this sometimes causes the workspace to retain last run test-results and ends with build failures
                                                                 // https://github.com/opensearch-project/opensearch-build/blob/6ed1ce3c583233eae4fe1027969d778cfc7660f7/src/test_workflow/test_recorder/test_recorder.py#L99
                                                                 sh("echo ${local_component} with index ${local_component_index} will sleep ${wait_seconds} seconds to reduce load && sleep ${wait_seconds}")
+                                                                // Unstash repo+artifacts on non-windows and unstash repo only on windows
+                                                                unstash "integtest-opensearch-$BUILD_NUMBER"
                                                                 if ("$platform".equals('windows')) {
                                                                     echo("On Windows Platform, actively download artifacts on all containers")
                                                                     echo "Downloading from S3: ${artifactPath}"
@@ -184,10 +186,8 @@ pipeline {
                                                                         localPath: "${WORKSPACE}/artifacts",
                                                                         force: true
                                                                       )
-                                                                    sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
+                                                                    sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE && ls -l $WORKSPACE")
                                                                 }
-                                                                // Unstash repo+artifacts on non-windows and unstash repo only on windows
-                                                                unstash "integtest-opensearch-$BUILD_NUMBER"
                                                                 sh('rm -rf test-results')
                                                                 runIntegTestScript(
                                                                     jobName: "$BUILD_JOB_NAME",
