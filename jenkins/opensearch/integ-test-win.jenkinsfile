@@ -109,9 +109,9 @@ pipeline {
             agent { label AGENT_LABEL }
             steps {
                 script{
-                    node(agent_nodes["linux_x64"]) {
-                        docker.withRegistry('https://public.ecr.aws/') {
-                            docker.image(docker_images["tar"]).inside(docker_args["tar"]) {
+                    //node(agent_nodes["linux_x64"]) {
+                    //    docker.withRegistry('https://public.ecr.aws/') {
+                    //        docker.image(docker_images["tar"]).inside(docker_args["tar"]) {
 
                                 downloadBuildManifest(
                                     url: BUILD_MANIFEST_URL,
@@ -229,9 +229,9 @@ pipeline {
                                         }
                                     }
                                 }
-                            }
-                        }
-                    }
+                    //        }
+                    //    }
+                    //}
                     parallel componentTests
                 }
             }
