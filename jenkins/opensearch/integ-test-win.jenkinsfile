@@ -131,16 +131,19 @@ pipeline {
                                     }
                                 }
 
-                                echo "Downloading from S3: ${artifactPath}"
-                                downloadFromS3(
-                                    assumedRoleName: 'opensearch-bundle',
-                                    roleAccountNumberCred: 'jenkins-aws-account-public',
-                                    downloadPath: "${artifactPath}/",
-                                    bucketName: "${ARTIFACT_BUCKET_NAME}",
-                                    localPath: "${WORKSPACE}/artifacts",
-                                    force: true
-                                  )
-                                sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
+                                if (! "$platform".equals('windows')) {
+                                    echo("Not on Windows, only download artifacts once and stash to distribute")
+                                    echo "Downloading from S3: ${artifactPath}"
+                                    downloadFromS3(
+                                        assumedRoleName: 'opensearch-bundle',
+                                        roleAccountNumberCred: 'jenkins-aws-account-public',
+                                        downloadPath: "${artifactPath}/",
+                                        bucketName: "${ARTIFACT_BUCKET_NAME}",
+                                        localPath: "${WORKSPACE}/artifacts",
+                                        force: true
+                                      )
+                                    sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
+                                }
 
                                 // Stash the current working directory files, aka opensearch-build repo
                                 // Unstash later in each triggered stage to run integTest
@@ -154,7 +157,7 @@ pipeline {
                                     // https://web.archive.org/web/20181121065904/http://blog.freeside.co/2013/03/29/groovy-gotcha-for-loops-and-closure-scope/
                                     def local_component = component.trim()
                                     def local_component_index = componentList.indexOf(local_component)
-                                    def wait_seconds = local_component_index * 10
+                                    def wait_seconds = (distribution.equals('windows')) ? local_component_index * 20 : local_component_index * 10
 
                                     echo "Add Component: ${local_component}"
                                     componentTests["Run Integtest ${local_component}"] = {
@@ -170,6 +173,20 @@ pipeline {
                                                                 // this sometimes causes the workspace to retain last run test-results and ends with build failures
                                                                 // https://github.com/opensearch-project/opensearch-build/blob/6ed1ce3c583233eae4fe1027969d778cfc7660f7/src/test_workflow/test_recorder/test_recorder.py#L99
                                                                 sh("echo ${local_component} with index ${local_component_index} will sleep ${wait_seconds} seconds to reduce load && sleep ${wait_seconds}")
+                                                                if ("$platform".equals('windows')) {
+                                                                    echo("On Windows Platform, actively download artifacts on all containers")
+                                                                    echo "Downloading from S3: ${artifactPath}"
+                                                                    downloadFromS3(
+                                                                        assumedRoleName: 'opensearch-bundle',
+                                                                        roleAccountNumberCred: 'jenkins-aws-account-public',
+                                                                        downloadPath: "${artifactPath}/",
+                                                                        bucketName: "${ARTIFACT_BUCKET_NAME}",
+                                                                        localPath: "${WORKSPACE}/artifacts",
+                                                                        force: true
+                                                                      )
+                                                                    sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
+                                                                }
+                                                                // Unstash repo+artifacts on non-windows and unstash repo only on windows
                                                                 unstash "integtest-opensearch-$BUILD_NUMBER"
                                                                 sh('rm -rf test-results')
                                                                 runIntegTestScript(
