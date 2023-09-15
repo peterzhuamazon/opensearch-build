@@ -33,6 +33,10 @@ def g__handleRemoveReadonly(func: FunctionType, path: str, exc: Any) -> Any:
                     break
             except Exception as ex:
                 logging.warn(f'Exception: {ex}')
+                # Allow additional handle cleanup steps for OS such as Windows
+                if "HANDLE_CMD" in os.environ:
+                    logging.warn(f'Try clear handles: {path}')
+                    os.system(f'{os.environ["HANDLE_CMD"]} {path}')
     else:
         raise
 
