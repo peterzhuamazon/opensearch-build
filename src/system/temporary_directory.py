@@ -26,7 +26,7 @@ def g__handleRemoveReadonly(func: FunctionType, path: str, exc: Any) -> Any:
         retry_total = 3
         for retry_count in range(retry_total):  # Re-run func to force deletion especially on windows
             try:
-                logging.warn(f'Removing try count: {retry_count + 1}/{retry_total} for {path}')
+                logging.warn(f'Remove try count: {retry_count + 1}/{retry_total} for {path}')
                 func_result = func(path)
                 logging.debug(f'func_result: {func_result}')
                 if func_result is None:
@@ -35,8 +35,11 @@ def g__handleRemoveReadonly(func: FunctionType, path: str, exc: Any) -> Any:
                 logging.warn(f'Exception: {ex}')
                 # Allow additional handle cleanup steps for OS such as Windows
                 if "HANDLE_CMD" in os.environ:
-                    logging.warn(f'Try clear handles: {path}')
-                    os.system(f'{os.environ["HANDLE_CMD"]} {path}')
+                    # Clear the parent dir of path to speed up
+                    handle_cmd = os.environ["HANDLE_CMD"]
+                    handle_clear_path = os.path.dirname(path)
+                    logging.warn(f'Try clear handles: {handle_clear_path}')
+                    os.system(f'{handle_cmd} {handle_clear_path}')
     else:
         raise
 
