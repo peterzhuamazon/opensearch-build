@@ -33,7 +33,7 @@ jobs:
           echo ${{ steps.list-changed-manifests.outputs.all_changed_files }}
           MATRIX_1=${{ steps.list-changed-manifests.outputs.all_changed_files }}
           echo "------"
-          echo MATRIX_1
+          echo $MATRIX_1
           exit 1
           echo "matrix={\"manifest\":${{ steps.list-changed-manifests.outputs.all_changed_files }}}" >> "$GITHUB_OUTPUT"
 
