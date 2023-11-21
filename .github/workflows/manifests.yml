@@ -29,16 +29,11 @@ jobs:
 
       - name: Set unique changed manifests as matrix
         id: set-matrix
-        run: |
-          echo ${{ steps.list-changed-manifests.outputs.all_changed_files }}
-          MATRIX_1=${{ steps.list-changed-manifests.outputs.all_changed_files }}
-          echo "------"
-          echo $MATRIX_1
-          exit 1
-          echo "matrix={\"manifest\":${{ steps.list-changed-manifests.outputs.all_changed_files }}}" >> "$GITHUB_OUTPUT"
+        run: echo "matrix={\"manifest\":${{ steps.list-changed-manifests.outputs.all_changed_files }}}" >> "$GITHUB_OUTPUT"
 
   manifest-checks-jdk11:
     needs: [list-changed-manifests]
+    if: contains(matrix.manifest, 'opensearch-1') || contains(matrix.manifest, 'opensearch-dashboards-1')
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
@@ -64,10 +59,37 @@ jobs:
 
   manifest-checks-jdk17:
     needs: [list-changed-manifests]
+    if: contains(matrix.manifest, 'opensearch-2') || contains(matrix.manifest, 'opensearch-dashboards-2')
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
       JDK_VERSION: 17
+    strategy:
+      matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set Up JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JDK_VERSION }}
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install Pipenv and Dependencies
+        run: |
+          python -m pip install --upgrade pipenv wheel
+      - name: OpenSearch Manifests
+        run: |-
+          ./ci.sh ${{ matrix.manifest }} --snapshot
+
+  manifest-checks-jdk21:
+    needs: [list-changed-manifests]
+    if: contains(matrix.manifest, 'opensearch-3') || contains(matrix.manifest, 'opensearch-dashboards-3')
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.9
+      JDK_VERSION: 21
     strategy:
       matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix) }}
     steps:
