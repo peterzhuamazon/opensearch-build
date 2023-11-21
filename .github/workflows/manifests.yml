@@ -85,7 +85,7 @@ jobs:
 
   manifest-checks-jdk21:
     needs: [list-changed-manifests]
-    if: contains(env.matrix.manifest, 'opensearch-3') || contains(env.matrix.manifest, 'opensearch-dashboards-3')
+    if: contains(${{ matrix.manifest }}, 'opensearch-3') || contains(${{ matrix.manifest }}, 'opensearch-dashboards-3')
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
