@@ -2,6 +2,9 @@
 name: manifests
 
 on:
+  push:
+    branches:
+      - 'manifests-jdks'
   pull_request:
     paths:
       - 'manifests/**/*.yml'
@@ -26,7 +29,13 @@ jobs:
 
       - name: Set unique changed manifests as matrix
         id: set-matrix
-        run: echo "matrix={\"manifest\":${{ steps.list-changed-manifests.outputs.all_changed_files }}}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo ${{ steps.list-changed-manifests.outputs.all_changed_files }}
+          MATRIX_1=${{ steps.list-changed-manifests.outputs.all_changed_files }}
+          echo "------"
+          echo MATRIX_1
+          exit 1
+          echo "matrix={\"manifest\":${{ steps.list-changed-manifests.outputs.all_changed_files }}}" >> "$GITHUB_OUTPUT"
 
   manifest-checks-jdk11:
     needs: [list-changed-manifests]
