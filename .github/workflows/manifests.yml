@@ -14,14 +14,14 @@ jobs:
   list-changed-manifests:
     runs-on: ubuntu-latest
     outputs:
-      matrix_1.x: ${{ steps.set-matrix-1.x.outputs.matrix_1.x }}
+      matrix_1x: ${{ steps.set-matrix-1x.outputs.matrix_1x }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get changed manifest files in 1.x
+      - name: Get changed manifest files in 1x
         uses: tj-actions/changed-files@v39
-        id: list-changed-manifests-1.x
+        id: list-changed-manifests-1x
         with:
           files: |
             manifests/**/opensearch-1*.yml
@@ -30,24 +30,24 @@ jobs:
           quotepath: false
           dir_names: false
 
-      - name: Set unique changed manifests as matrix 1.x
-        id: set-matrix-1.x
+      - name: Set unique changed manifests as matrix 1x
+        id: set-matrix-1x
         run: |
-          if ${{ steps.list-changed-manifests-1.x.outputs.any_changed }}; then
-            echo "matrix_1.x={\"manifest\":${{ steps.list-changed-manifests-1.x.outputs.all_changed_files }}}" >> "$GITHUB_ENV"
+          if ${{ steps.list-changed-manifests-1x.outputs.any_changed }}; then
+            echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1x.outputs.all_changed_files }}}" >> "$GITHUB_ENV"
           else
-            echo "No 1.x changes"
+            echo "No 1x changes"
           fi
 
-  manifest-checks-1.x:
+  manifest-checks-1x:
     needs: [list-changed-manifests]
-    if: ${{ needs.list-changed-manifests.outputs.matrix_1.x != '' }}
+    if: ${{ needs.list-changed-manifests.outputs.matrix_1x != '' }}
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
       JDK_VERSION: 11
     strategy:
-      matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix_1.x) }}
+      matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix_1x) }}
     steps:
       - uses: actions/checkout@v3
       - name: Set Up JDK ${{ env.JDK_VERSION }}
