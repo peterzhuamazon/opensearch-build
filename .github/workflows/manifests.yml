@@ -43,7 +43,7 @@ jobs:
     needs: [list-changed-manifests]
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ needs.list-changed-manifests.outputs.matrix_1x }}
+      - run: echo ${{ fromJson(needs.list-changed-manifests.outputs.matrix_1x) }}
 
   manifest-checks-1x:
     needs: [list-changed-manifests]
