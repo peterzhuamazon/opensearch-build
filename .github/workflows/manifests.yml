@@ -34,7 +34,7 @@ jobs:
         id: set-matrix-1x
         run: |
           if ${{ steps.list-changed-manifests-1x.outputs.any_changed }}; then
-            echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1x.outputs.all_changed_files }}}" >> "$GITHUB_OUTPUT"
+            echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1x.outputs.all_changed_files }}, \"jdk\": \"11\"}" >> "$GITHUB_OUTPUT"
           else
             echo "No 1x changes"
           fi
@@ -51,15 +51,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
-      JDK_VERSION: 11
     strategy:
       matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix_1x) }}
     steps:
       - uses: actions/checkout@v3
-      - name: Set Up JDK ${{ env.JDK_VERSION }}
+      - name: Set Up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ env.JDK_VERSION }}
+          java-version: ${{ matrix.jdk }}
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v3
         with:
