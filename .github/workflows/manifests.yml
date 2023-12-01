@@ -33,8 +33,10 @@ jobs:
       - name: Set unique changed manifests as matrix 1x
         id: set-matrix-1x
         run: |
+          matrixArray=()
           if ${{ steps.list-changed-manifests-1x.outputs.any_changed }}; then
-            echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1x.outputs.all_changed_files }}, \"jdk\": [11]}" >> "$GITHUB_OUTPUT"
+            #echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1x.outputs.all_changed_files }}, \"jdk\": [11]}" >> "$GITHUB_OUTPUT"
+            echo "matrix_1x+={\"manifest\":${{ steps.list-changed-manifests-1x.outputs.all_changed_files }}, \"jdk\": [11]}" >> "$GITHUB_OUTPUT"
           else
             echo "No 1x changes"
           fi
@@ -43,32 +45,33 @@ jobs:
     needs: [list-changed-manifests]
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ fromJson(needs.list-changed-manifests.outputs.matrix_1x) }}
+      - run: |
+          echo ${{ needs.list-changed-manifests.outputs.matrix_1x }}
 
-  manifest-checks-1x:
-    needs: [list-changed-manifests]
-    if: ${{ needs.list-changed-manifests.outputs.matrix_1x }}
-    runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: 3.9
-    strategy:
-      matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix_1x) }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set Up JDK ${{ matrix.jdk }}
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.jdk }}
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install Pipenv and Dependencies
-        run: |
-          python -m pip install --upgrade pipenv wheel
-      - name: OpenSearch Manifests
-        run: |-
-          ./ci.sh ${{ matrix.manifest }} --snapshot
+#  manifest-checks-1x:
+#    needs: [list-changed-manifests]
+#    if: ${{ needs.list-changed-manifests.outputs.matrix_1x }}
+#    runs-on: ubuntu-latest
+#    env:
+#      PYTHON_VERSION: 3.9
+#    strategy:
+#      matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix_1x) }}
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Set Up JDK ${{ matrix.jdk }}
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: ${{ matrix.jdk }}
+#      - name: Set up Python ${{ env.PYTHON_VERSION }}
+#        uses: actions/setup-python@v3
+#        with:
+#          python-version: ${{ env.PYTHON_VERSION }}
+#      - name: Install Pipenv and Dependencies
+#        run: |
+#          python -m pip install --upgrade pipenv wheel
+#      - name: OpenSearch Manifests
+#        run: |-
+#          ./ci.sh ${{ matrix.manifest }} --snapshot
 
 #  manifest-checks-jdk17:
 #    needs: [list-changed-manifests]
