@@ -58,4 +58,4 @@ components:
       - windows
     checks:
       - gradle:properties:version
-#      - gradle:dependencies:opensearch.version
+      - gradle:dependencies:opensearch.version
