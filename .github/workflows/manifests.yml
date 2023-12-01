@@ -33,7 +33,7 @@ jobs:
       - name: Set unique changed manifests as matrix 1x
         id: set-matrix-1x
         run: |
-          echo "matrix_1x={\"include\":[{\"manifest\":[\"manifests/1.3.14/opensearch-1.3.14.yml\"], \"jdk\": [11]}, {\"manifest\":[\"manifests/2.11.0/opensearch-2.11.0.yml\"], \"jdk\": [17]}}" >> "$GITHUB_OUTPUT"
+          echo "matrix_1x={\"include\":[{\"manifest\":[\"manifests/1.3.14/opensearch-1.3.14.yml\"], \"jdk\": [11]}, {\"manifest\":[\"manifests/2.11.0/opensearch-2.11.0.yml\"], \"jdk\": [17]}]}" >> "$GITHUB_OUTPUT"
           if ${{ steps.list-changed-manifests-1x.outputs.any_changed }}; then
             echo "matrix_1x={\"include\":[{\"manifest\":[\"manifests/1.3.14/opensearch-1.3.14.yml\"], \"jdk\": [11]}, {\"manifest\":[\"manifests/2.11.0/opensearch-2.11.0.yml\"], \"jdk\": [17]}}" >> "$GITHUB_OUTPUT"
           else
