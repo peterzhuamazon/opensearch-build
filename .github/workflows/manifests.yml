@@ -44,7 +44,6 @@ jobs:
         run: |
           java_version=`cat ${{ matrix.manifest }} | yq -r .ci.image.args | grep -Eo '[0-9]+'`
           echo $java_version
-          cat ${{ matrix.manifest }}
           echo "JAVA_VERSION=$java_version" >> "$GITHUB_ENV"
       - name: Set Up JDK ${{ env.JAVA_VERSION }}
         if: ${{ env.JAVA_VERSION }}
