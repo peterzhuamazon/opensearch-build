@@ -36,7 +36,7 @@ jobs:
           matrixArray=()
           if ${{ steps.list-changed-manifests-1x.outputs.any_changed }}; then
             #echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1x.outputs.all_changed_files }}, \"jdk\": [11]}" >> "$GITHUB_OUTPUT"
-            echo "matrix_1x={\"include\":[{\"manifest\":[\"manifests/1.3.14/opensearch-1.3.14.yml\"], \"jdk\": [11]}, {\"manifest\":[\"manifests/2.11.0/opensearch-2.11.0.yml\"], \"jdk\": [17]}}"
+            echo "matrix_1x={\"include\":[{\"manifest\":[\"manifests/1.3.14/opensearch-1.3.14.yml\"], \"jdk\": [11]}, {\"manifest\":[\"manifests/2.11.0/opensearch-2.11.0.yml\"], \"jdk\": [17]}}" >> "$GITHUB_OUTPUT"
           else
             echo "No 1x changes"
           fi
