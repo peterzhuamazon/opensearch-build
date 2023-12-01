@@ -34,7 +34,7 @@ jobs:
         id: set-matrix-1x
         run: |
           if ${{ steps.list-changed-manifests-1x.outputs.any_changed }}; then
-            echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1x.outputs.all_changed_files }}, \"jdk\": \"11\"}" >> "$GITHUB_OUTPUT"
+            echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1x.outputs.all_changed_files }}, \"jdk\": \"\[11\]\"}" >> "$GITHUB_OUTPUT"
           else
             echo "No 1x changes"
           fi
