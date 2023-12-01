@@ -130,12 +130,12 @@ components:
     platforms:
       - linux
       - windows
-  - name: asynchronous-search
-    repository: https://github.com/opensearch-project/asynchronous-search.git
-    ref: tags/1.3.13.0
-    checks:
-      - gradle:properties:version
-      - gradle:dependencies:opensearch.version
-    platforms:
-      - linux
-      - windows
+#  - name: asynchronous-search
+#    repository: https://github.com/opensearch-project/asynchronous-search.git
+#    ref: tags/1.3.13.0
+#    checks:
+#      - gradle:properties:version
+#      - gradle:dependencies:opensearch.version
+#    platforms:
+#      - linux
+#      - windows

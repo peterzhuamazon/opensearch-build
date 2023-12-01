@@ -41,7 +41,7 @@ jobs:
 
   manifest-checks-1x:
     needs: [list-changed-manifests]
-    if: ${{ needs.list-changed-manifests.outputs.matrix_1x != '' }}
+    if: ${{ needs.list-changed-manifests.outputs.matrix_1x }}
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
