@@ -13,6 +13,8 @@ on:
 jobs:
   list-changed-manifests:
     runs-on: ubuntu-latest
+    outputs:
+      matrix_1.x: ${{ steps.set-matrix-1.x.outputs.matrix_1.x }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -29,22 +31,23 @@ jobs:
           dir_names: false
 
       - name: Set unique changed manifests as matrix 1.x
+        id: set-matrix-1.x
         run: |
           if ${{ steps.list-changed-manifests-1.x.outputs.any_changed }}; then
-            echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1.x.outputs.all_changed_files }}}" >> "$GITHUB_ENV"
+            echo "matrix_1.x={\"manifest\":${{ steps.list-changed-manifests-1.x.outputs.all_changed_files }}}" >> "$GITHUB_ENV"
           else
             echo "No 1.x changes"
           fi
 
   manifest-checks-1.x:
     needs: [list-changed-manifests]
-    if: ${{ env.matrix_1x != '' }}
+    if: ${{ needs.list-changed-manifests.outputs.matrix_1.x != '' }}
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
       JDK_VERSION: 11
     strategy:
-      matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix_1.x) }}
     steps:
       - uses: actions/checkout@v3
       - name: Set Up JDK ${{ env.JDK_VERSION }}
