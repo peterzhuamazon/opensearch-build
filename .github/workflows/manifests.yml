@@ -39,6 +39,12 @@ jobs:
             echo "No 1x changes"
           fi
 
+  test:
+    needs: [list-changed-manifests]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ needs.list-changed-manifests.outputs.matrix_1x }}
+
   manifest-checks-1x:
     needs: [list-changed-manifests]
     if: ${{ needs.list-changed-manifests.outputs.matrix_1x }}
