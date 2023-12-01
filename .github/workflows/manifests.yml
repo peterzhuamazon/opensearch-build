@@ -13,53 +13,55 @@ on:
 jobs:
   list-changed-manifests:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Get changed manifest files
+
+      - name: Get changed manifest files in 1.x
         uses: tj-actions/changed-files@v39
-        id: list-changed-manifests
+        id: list-changed-manifests-1.x
         with:
-          files: manifests/**/opensearch*.yml
+          files: |
+            manifests/**/opensearch-1*.yml
+            manifests/**/opensearch-dashboards-1*.yml
           json: true
           quotepath: false
           dir_names: false
 
-      - name: Set unique changed manifests as matrix
-        id: set-matrix
+      - name: Set unique changed manifests as matrix 1.x
         run: |
-          echo ${{ steps.list-changed-manifests.outputs.all_changed_files }}
-          exit 1
-          echo "matrix={\"manifest\":${{ steps.list-changed-manifests.outputs.all_changed_files }}}" >> "$GITHUB_OUTPUT"
+          if ${{ steps.list-changed-manifests-1.x.outputs.any_changed }}; then
+            echo "matrix_1x={\"manifest\":${{ steps.list-changed-manifests-1.x.outputs.all_changed_files }}}" >> "$GITHUB_ENV"
+          else
+            echo "No 1.x changes"
+          fi
 
-#  manifest-checks-jdk11:
-#    needs: [list-changed-manifests]
-#    if: contains(matrix.manifest, 'opensearch-1') || contains(matrix.manifest, 'opensearch-dashboards-1')
-#    runs-on: ubuntu-latest
-#    env:
-#      PYTHON_VERSION: 3.9
-#      JDK_VERSION: 11
-#    strategy:
-#      matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix) }}
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Set Up JDK ${{ env.JDK_VERSION }}
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: ${{ env.JDK_VERSION }}
-#      - name: Set up Python ${{ env.PYTHON_VERSION }}
-#        uses: actions/setup-python@v3
-#        with:
-#          python-version: ${{ env.PYTHON_VERSION }}
-#      - name: Install Pipenv and Dependencies
-#        run: |
-#          python -m pip install --upgrade pipenv wheel
-#      - name: OpenSearch Manifests
-#        run: |-
-#          ./ci.sh ${{ matrix.manifest }} --snapshot
-#
+  manifest-checks-1.x:
+    needs: [list-changed-manifests]
+    if: ${{ env.matrix_1x != '' }}
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.9
+      JDK_VERSION: 11
+    strategy:
+      matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set Up JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JDK_VERSION }}
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install Pipenv and Dependencies
+        run: |
+          python -m pip install --upgrade pipenv wheel
+      - name: OpenSearch Manifests
+        run: |-
+          ./ci.sh ${{ matrix.manifest }} --snapshot
+
 #  manifest-checks-jdk17:
 #    needs: [list-changed-manifests]
 #    if: contains(matrix.manifest, 'opensearch-2') || contains(matrix.manifest, 'opensearch-dashboards-2')
