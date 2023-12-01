@@ -45,7 +45,7 @@ jobs:
           java_version=`cat ${{ matrix.manifest }} | yq -r .ci.image.args | ggrep -Eo '[0-9]+'`
           echo "JAVA_VERSION=$java_version" >> "$GITHUB_ENV"
       - name: Set Up JDK ${{ env.JAVA_VERSION }}
-        if: ${{ env.$JAVA_VERSION }}
+        if: ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v1
         with:
           java-version: ${{ env.JAVA_VERSION }}
