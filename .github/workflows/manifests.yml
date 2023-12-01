@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo ${{ needs.list-changed-manifests.outputs.matrix }}
+          echo ${{ toJSON(needs.list-changed-manifests.outputs.matrix) }}
 
   manifest-checks:
     needs: [list-changed-manifests]
@@ -56,7 +56,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.list-changed-manifests.outputs.matrix) }}
     steps:
-      - run: echo ${{ matrix }}
+      - run: echo ${{ matrix.manifest }}
       - uses: actions/checkout@v3
       - name: Set Up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v1
