@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check JDK Version
         run: |
-          java_version=`cat ${{ matrix.manifest }} | yq -r .ci.image.args | grep -Eo '[0-9]+'`
+          java_version=`cat ${{ matrix.manifest }} | yq -r .ci.image.args | grep -Eo '[0-9]+' || echo ''`
           echo $java_version
           echo "JAVA_VERSION=$java_version" >> "$GITHUB_ENV"
       - name: Set Up JDK ${{ env.JAVA_VERSION }}
