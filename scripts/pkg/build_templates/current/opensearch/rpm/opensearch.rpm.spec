@@ -131,7 +131,7 @@ if command -v systemd-tmpfiles > /dev/null; then
 fi
 
 # Restart the service after an upgrade
-if [ "$1" -eq 1 ]; then
+if [ "$1" -eq 2 ]; then
     if command -v systemctl >/dev/null && systemctl is-enabled opensearch.service >/dev/null; then
         echo "Restarting opensearch.service after upgrade"
         systemctl start opensearch.service
