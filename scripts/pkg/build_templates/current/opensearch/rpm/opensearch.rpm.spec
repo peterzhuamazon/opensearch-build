@@ -130,18 +130,33 @@ if command -v systemd-tmpfiles > /dev/null; then
     systemd-tmpfiles --create %{name}.conf
 fi
 
-# Messages
-echo "### NOT starting on installation, please execute the following statements to configure opensearch service to start automatically using systemd"
-echo " sudo systemctl daemon-reload"
-echo " sudo systemctl enable opensearch.service"
-echo "### You can start opensearch service by executing"
-echo " sudo systemctl start opensearch.service"
-if [ -d %{product_dir}/plugins/opensearch-security ]; then
-    echo "### Create opensearch demo certificates in %{config_dir}/"
-    echo " See demo certs creation log in %{log_dir}/install_demo_configuration.log"
+# Restart the service after an upgrade
+if [ "$1" -eq 1 ]; then
+    if command -v systemctl >/dev/null && systemctl is-enabled opensearch.service >/dev/null; then
+        echo "Restarting opensearch.service after upgrade"
+        systemctl start opensearch.service
+    fi
+    if command -v systemctl >/dev/null && systemctl is-enabled opensearch-performance-analyzer.service >/dev/null; then
+        echo "Restarting opensearch-performance-analyzer.service after upgrade"
+        systemctl start opensearch-performance-analyzer.service
+    fi
+else
+    # Messages
+    echo "### NOT starting on installation, please execute the following statements to configure opensearch service to start automatically using systemd"
+    echo " sudo systemctl daemon-reload"
+    echo " sudo systemctl enable opensearch.service"
+    echo "### You can start opensearch service by executing"
+    echo " sudo systemctl start opensearch.service"
+
+    if [ -d ${product_dir}/plugins/opensearch-security ]; then
+        echo "### Create opensearch demo certificates in ${config_dir}/"
+        echo " See demo certs creation log in ${log_dir}/install_demo_configuration.log"
+    fi
 fi
-echo "### Upcoming breaking change in packaging"
-echo " In a future release of OpenSearch, we plan to change the permissions associated with access to installed files"
+
+# Messages
+echo "### Breaking change in packaging since 2.13.0"
+echo " In 2.13.0 and later releases of OpenSearch, we have changed the permissions associated with access to installed files"
 echo " If you are configuring tools that require read access to the OpenSearch configuration files, we recommend you add the user that runs these tools to the 'opensearch' group"
 echo " For more information, see https://github.com/opensearch-project/opensearch-build/pull/4043"
 exit 0

@@ -92,14 +92,24 @@ fi
 if command -v systemd-tmpfiles > /dev/null; then
     systemd-tmpfiles --create %{name}.conf
 fi
-# Messages
-echo "### NOT starting on installation, please execute the following statements to configure opensearch-dashboards service to start automatically using systemd"
-echo " sudo systemctl daemon-reload"
-echo " sudo systemctl enable opensearch-dashboards.service"
-echo "### You can start opensearch-dashboards service by executing"
-echo " sudo systemctl start opensearch-dashboards.service"
-echo "### Upcoming breaking change in packaging"
-echo " In a future release of OpenSearch Dashboards, we plan to change the permissions associated with access to installed files"
+
+# Restart the service after an upgrade
+if [ "$1" -eq 1 ]; then
+    if command -v systemctl >/dev/null && systemctl is-enabled opensearch-dashboards.service >/dev/null; then
+        echo "Restarting opensearch-dashboards.service after upgrade"
+        systemctl start opensearch-dashboards.service
+    fi
+else
+    # Messages
+    echo "### NOT starting on installation, please execute the following statements to configure opensearch-dashboards service to start automatically using systemd"
+    echo " sudo systemctl daemon-reload"
+    echo " sudo systemctl enable opensearch-dashboards.service"
+    echo "### You can start opensearch-dashboards service by executing"
+    echo " sudo systemctl start opensearch-dashboards.service"
+fi
+
+echo "### Breaking change in packaging since 2.13.0"
+echo " In 2.13.0 and later releases of OpenSearch Dashboards, we have changed the permissions associated with access to installed files"
 echo " If you are configuring tools that require read access to the OpenSearch Dashboards configuration files, we recommend you add the user that runs these tools to the 'opensearch-dashboards' group"
 echo " For more information, see https://github.com/opensearch-project/opensearch-build/pull/4043"
 exit 0
