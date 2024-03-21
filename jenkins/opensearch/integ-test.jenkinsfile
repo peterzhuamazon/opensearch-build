@@ -160,6 +160,10 @@ pipeline {
                     String switch_user_non_root = (distribution.equals('rpm') || distribution.equals('deb')) ? 'true' : 'false'
                     echo "switch_user_non_root: ${switch_user_non_root}"
 
+                    def docker_image = "public.ecr.aws/" + docker_images["$distribution"]
+                    echo "pull docker image $docker_image before the run for $distribution"
+                    sh("docker pull $docker_image")
+
                     for (component_check in componentList) {
                         if (!componentDefaultList.contains(component_check)) {
                             error("${component_check} is not present in the test manifest: ${TEST_MANIFEST}")

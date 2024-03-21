@@ -53,6 +53,8 @@
                TestManifest.getComponentNames()
                BuildManifest.getNames()
                integ-test.echo(switch_user_non_root: false)
+               integ-test.echo(pull docker image public.ecr.aws/opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v3 before the run for tar)
+               integ-test.sh(docker pull public.ecr.aws/opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v3)
                integ-test.echo(Skipping tests for index-management as is not present in the provided build manifest.)
                integ-test.echo(Skipping tests for opensearch-reports as is not present in the provided build manifest.)
                integ-test.echo(Skipping tests for cross-cluster-replication as is not present in the provided build manifest.)

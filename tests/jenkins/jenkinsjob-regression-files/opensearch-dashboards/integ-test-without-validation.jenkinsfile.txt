@@ -52,6 +52,8 @@
                BuildManifest.getNames()
                integ-test.echo(switch_user_non_root: false)
                integ-test.echo(componentList: [ganttChartDashboards, indexManagementDashboards, anomalyDetectionDashboards, OpenSearch-Dashboards, reportsDashboards, queryWorkbenchDashboards, observabilityDashboards])
+               integ-test.echo(pull docker image public.ecr.aws/opensearchstaging/ci-runner:ci-runner-rockylinux8-opensearch-dashboards-integtest-v4 before the run for tar)
+               integ-test.sh(docker pull public.ecr.aws/opensearchstaging/ci-runner:ci-runner-rockylinux8-opensearch-dashboards-integtest-v4)
                integ-test.echo(Not on Windows, stash repository+artifacts)
                integ-test.echo(Downloading from S3: distribution-build-opensearch/3.0.0/215/linux/x64/tar)
                integ-test.downloadFromS3({assumedRoleName=opensearch-bundle, roleAccountNumberCred=jenkins-aws-account-public, downloadPath=distribution-build-opensearch/3.0.0/215/linux/x64/tar/, bucketName=job-s3-bucket-name, localPath=/tmp/workspace/artifacts, force=true})
