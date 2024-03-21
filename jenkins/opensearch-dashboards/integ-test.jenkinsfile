@@ -278,6 +278,7 @@ pipeline {
                                                     else {
                                                         echo "Not on Windows, unstash repository+artifacts"
                                                     }
+                                                    sh("pwd && ls -l && ls -l $WORKSPACE")
 
                                                     if (switch_user_non_root == 'true') {
                                                         echo "Non-root user need to change ownership of $WORKSPACE"
