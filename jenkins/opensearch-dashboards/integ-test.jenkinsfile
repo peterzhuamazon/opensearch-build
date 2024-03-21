@@ -184,8 +184,10 @@ pipeline {
                     String switch_user_non_root = (distribution.equals('rpm') || distribution.equals('deb')) ? 'true' : 'false'
                     echo "switch_user_non_root: ${switch_user_non_root}"
                     echo "componentList: ${componentList}"
-                    echo "pull docker image before the run for $distribution"
-                    docker.image(docker_images["$distribution"]).pull(force: true)
+
+                    def docker_image = docker_images["$distribution"]
+                    echo "pull docker image $docker_image before the run for $distribution"
+                    sh("docker pull $docker_image")
 
                     for (component_check in componentList) {
                         if (!componentDefaultList.contains(component_check)) {
