@@ -184,6 +184,8 @@ pipeline {
                     String switch_user_non_root = (distribution.equals('rpm') || distribution.equals('deb')) ? 'true' : 'false'
                     echo "switch_user_non_root: ${switch_user_non_root}"
                     echo "componentList: ${componentList}"
+                    echo "pull docker image before the run for $distribution"
+                    docker.image(docker_images["$distribution"]).pull(force: true)
 
                     for (component_check in componentList) {
                         if (!componentDefaultList.contains(component_check)) {
@@ -278,6 +280,10 @@ pipeline {
                                                     else {
                                                         echo "Not on Windows, unstash repository+artifacts"
                                                     }
+                                                    //if (switch_user_non_root == 'true') {
+                                                    //    echo "Non-root user need to change ownership of $WORKSPACE"
+                                                    //    sh("sudo chown -R 1000:1000 $WORKSPACE")
+                                                    //}
 
                                                     sh("rm -rf test-results")
                                                     runIntegTestScript(
