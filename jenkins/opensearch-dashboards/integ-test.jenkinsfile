@@ -282,6 +282,10 @@ pipeline {
                                                     else {
                                                         echo "Not on Windows, unstash repository+artifacts"
                                                     }
+                                                    if (switch_user_non_root == 'true') {
+                                                        echo "Non-root user need to change ownership of $WORKSPACE"
+                                                        sh("sudo chown -R 1000:1000 $WORKSPACE")
+                                                    }
 
                                                     sh("rm -rf test-results")
                                                     runIntegTestScript(
