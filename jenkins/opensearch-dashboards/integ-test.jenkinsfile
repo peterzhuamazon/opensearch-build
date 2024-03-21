@@ -279,7 +279,7 @@ pipeline {
                                                         echo "Not on Windows, unstash repository+artifacts"
                                                     }
 
-                                                    sh("rm -rf test-results")
+                                                    sh("sudo chown -R 1000:1000 $WORKSPACE && rm -rf test-results")
                                                     runIntegTestScript(
                                                         jobName: "$BUILD_JOB_NAME",
                                                         componentName: "${local_component}",
