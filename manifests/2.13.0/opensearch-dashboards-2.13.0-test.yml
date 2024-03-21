@@ -52,7 +52,7 @@ components:
     integ-test:
       test-configs:
         - with-security
-#        - without-security
+        - without-security
   - name: notificationsDashboards
     integ-test:
       test-configs:
