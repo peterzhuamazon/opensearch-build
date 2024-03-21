@@ -51,8 +51,8 @@ components:
   - name: securityDashboards
     integ-test:
       test-configs:
-#        - with-security
-        - without-security
+        - with-security
+#        - without-security
   - name: notificationsDashboards
     integ-test:
       test-configs:
