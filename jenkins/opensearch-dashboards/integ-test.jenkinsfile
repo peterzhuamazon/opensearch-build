@@ -187,7 +187,7 @@ pipeline {
 
                     def docker_image = "public.ecr.aws/" + docker_images["$distribution"]
                     echo "pull docker image $docker_image before the run for $distribution"
-                    sh("docker pull $docker_image")
+                    sh("docker pull $docker_image && id -un 1000")
 
                     for (component_check in componentList) {
                         if (!componentDefaultList.contains(component_check)) {
