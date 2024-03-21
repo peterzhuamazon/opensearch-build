@@ -278,7 +278,6 @@ pipeline {
                                                     else {
                                                         echo "Not on Windows, unstash repository+artifacts"
                                                     }
-                                                    sh("pwd && ls -l && ls -l $WORKSPACE")
 
                                                     if (switch_user_non_root == 'true') {
                                                         echo "Non-root user need to change ownership of $WORKSPACE"
@@ -286,6 +285,7 @@ pipeline {
                                                     }
 
                                                     sh("rm -rf test-results")
+                                                    sh("pwd && ls -l && ls -l $WORKSPACE/../")
                                                     runIntegTestScript(
                                                         jobName: "$BUILD_JOB_NAME",
                                                         componentName: "${local_component}",
