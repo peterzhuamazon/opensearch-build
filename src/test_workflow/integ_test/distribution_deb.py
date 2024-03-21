@@ -48,7 +48,7 @@ class DistributionDeb(Distribution):
                 '&&',
                 f'sudo chmod 0666 {self.config_path}',
                 '&&',
-                f'sudo chmod 0755 {os.path.dirname(self.config_path)} {self.log_dir}',
+                f'sudo chmod 0755 {os.path.dirname(self.config_path)} {self.log_dir} {self.install_dir}/logs {self.install_dir}/logs/',
                 '&&',
                 f'sudo usermod -a -G {self.filename} `whoami`',
                 '&&',
@@ -56,6 +56,7 @@ class DistributionDeb(Distribution):
             ]
         )
         subprocess.check_call(deb_install_cmd, cwd=self.work_dir, shell=True)
+        subprocess.check_call(f"ls -l /var/log | grep {self.filename} && ls -l /var/log/{self.filename}", cwd=self.work_dir, shell=True)
 
     @property
     def start_cmd(self) -> str:
