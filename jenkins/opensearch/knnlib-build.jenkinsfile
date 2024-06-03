@@ -48,20 +48,20 @@ pipeline {
             }
             steps {
                 script {
-                    //dockerAgent = detectDockerAgent()
-                    //env.javaVersionNumber = dockerAgent.javaVersion.replaceAll("[^0-9]", "") // Only get number
 
                     if (INPUT_MANIFEST == '' || !fileExists("manifests/${INPUT_MANIFEST}")) {
                         currentBuild.result = 'ABORTED'
                         error("Input manifest was not provided or not found in manifests/${TEST_MANIFEST}.")
                     }
 
+                    dockerAgent = detectDockerAgent()
+
                     currentBuild.description = INPUT_MANIFEST
 
                 }
             }
         }
-        stage('Build OpenSearch-min Snapshots') {
+        stage('Build k-NN Lib') {
             parallel {
                 stage('linux-x64') {
                     agent {
