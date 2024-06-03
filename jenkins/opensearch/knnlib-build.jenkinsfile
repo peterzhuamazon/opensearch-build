@@ -76,7 +76,7 @@ pipeline {
                     steps {
                         script {
                             dir("k-NN") {
-                                def inputManifestObj = lib.jenkins.InputManifest.new(readYaml(file: "manifests/${INPUT_MANIFEST}))
+                                def inputManifestObj = lib.jenkins.InputManifest.new(readYaml(file: "manifests/${INPUT_MANIFEST}"))
                                 def knnRepo = getRepo("k-NN")
                                 def knnRef = getRef("k-NN")
                                 checkout([$class: 'GitSCM', branches: [[name: knnRef]], userRemoteConfigs: [[url: knnRepo]]])
