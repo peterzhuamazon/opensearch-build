@@ -7,14 +7,18 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@6.4.8', retriever: modernSCM([
-    $class: 'GitSCMSource',
-    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
-]))
+//lib = library(identifier: 'jenkins@6.4.8', retriever: modernSCM([
+//    $class: 'GitSCMSource',
+//    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+//]))
 
+lib = library(identifier: 'jenkins@knnlib-standalone-buildlibs', retriever: modernSCM([
+    $class: 'GitSCMSource',
+    remote: 'https://github.com/peterzhuamazon/opensearch-build-libraries.git',
+]))
 pipeline {
     options {
-        timeout(time: 1, unit: 'HOURS')
+        timeout(time: 2, unit: 'HOURS')
     }
     agent none
     environment {
@@ -54,7 +58,6 @@ pipeline {
 
                     currentBuild.description = INPUT_MANIFEST
 
-                    def inputManifestObj = lib.jenkins.InputManifest.new(readYaml(file: "manifests/${INPUT_MANIFEST}))
                 }
             }
         }
@@ -72,15 +75,18 @@ pipeline {
                     }
                     steps {
                         script {
-                            sh """#!/bin/bash
-                                echo hahaha
-
-                            """
-                            //uploadToS3(
-                            //        sourcePath: "$WORKSPACE/artifacts",
-                            //        bucket: "${ARTIFACT_BUCKET_NAME}",
-                            //        path: finalUploadPath
-                            //)
+                            dir("k-NN") {
+                                def inputManifestObj = lib.jenkins.InputManifest.new(readYaml(file: "manifests/${INPUT_MANIFEST}))
+                                def knnRepo = getRepo("k-NN")
+                                def knnRef = getRef("k-NN")
+                                checkout([$class: 'GitSCM', branches: [[name: knnRef]], userRemoteConfigs: [[url: knnRepo]]])
+                                sh("ls -l")
+                                //uploadToS3(
+                                //        sourcePath: "$WORKSPACE/artifacts",
+                                //        bucket: "${ARTIFACT_BUCKET_NAME}",
+                                //        path: finalUploadPath
+                                //)
+                            }
                         }
                     }
                     post {
