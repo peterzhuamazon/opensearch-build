@@ -7,9 +7,14 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@9.0.1', retriever: modernSCM([
+//lib = library(identifier: 'jenkins@9.0.1', retriever: modernSCM([
+//    $class: 'GitSCMSource',
+//    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+//]))
+
+lib = library(identifier: 'jenkins@images-manifests-versionlib', retriever: modernSCM([
     $class: 'GitSCMSource',
-    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+    remote: 'https://github.com/peterzhuamazon/opensearch-build-libraries.git',
 ]))
 
 pipeline {
@@ -138,6 +143,8 @@ pipeline {
                     dockerAgent = detectDockerAgent()
                     env.javaVersionNumber = dockerAgent.javaVersion.replaceAll('[^0-9]', '') // Only get number
                     currentBuild.description = INPUT_MANIFEST
+
+                    error("Exit 1")
 
                     paramType = [
                         'BUILD_PLATFORM': 'linux windows',
