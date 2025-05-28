@@ -987,7 +987,7 @@ pipeline {
         }
         failure {
             node(AGENT_LINUX_X64) {
-                checkout scm
+                //checkout scm
                 script {
                     postCleanup()
                 }
