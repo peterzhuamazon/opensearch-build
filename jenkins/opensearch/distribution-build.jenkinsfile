@@ -139,6 +139,7 @@ pipeline {
                         currentBuild.result = 'ABORTED'
                         error("Input manifest was not provided or not found at manifests/${INPUT_MANIFEST}.")
                     }
+
                     echo('Detect Docker Images and Related Parameters')
                     dockerAgentLinuxTar = detectDockerAgent(
                         distribution: "tar",
@@ -156,7 +157,7 @@ pipeline {
                         distribution: "zip",
                         platform: "windows"
                     )
-                    env.javaVersionNumber = dockerAgentWindowsZip.javaVersion.replaceAll('[^0-9]', '') // Only get number
+                    echo('Print Image Information')
                     [
                         linux_tar: dockerAgentLinuxTar,
                         linux_deb: dockerAgentLinuxDeb,
@@ -165,6 +166,8 @@ pipeline {
                     ].each { name, agent ->
                         echo "${name} Image: ${agent.image}, Docker Args: ${agent.args}"
                     }
+
+                    env.javaVersionNumber = dockerAgentWindowsZip.javaVersion.replaceAll('[^0-9]', '') // Only get number
                     currentBuild.description = INPUT_MANIFEST
 
                     error("Exit 1")
