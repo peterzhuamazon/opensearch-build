@@ -158,7 +158,7 @@ pipeline {
                     )
                     env.javaVersionNumber = dockerAgentWindowsZip.javaVersion.replaceAll('[^0-9]', '') // Only get number
                     [ dockerAgentLinuxTar, dockerAgentLinuxDeb, dockerAgentLinuxRpm, dockerAgentWindowsZip].each { dockerAgent ->
-                        echo "Docker Image Name: ${dockerAgent.name}"
+                        echo "Docker Image: ${dockerAgent.image}, Docker Args: ${dockerAgent.args}"
                     }
                     currentBuild.description = INPUT_MANIFEST
 
