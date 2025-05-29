@@ -26,9 +26,6 @@ pipeline {
         AGENT_LINUX_X64 = 'Jenkins-Agent-AL2023-X64-M54xlarge-Docker-Host'
         AGENT_LINUX_ARM64 = 'Jenkins-Agent-AL2023-Arm64-M6g4xlarge-Docker-Host'
         AGENT_WINDOWS_X64 = 'Jenkins-Agent-Windows2019-X64-M54xlarge-Docker-Host'
-        IMAGE_LINUX_RPM = 'opensearchstaging/ci-runner:ci-runner-almalinux8-opensearch-build-v1' // required for rpm to create digest sha256 correctly with rpm 4.12+, still define here for 1.x version as 2.x+ moved to rockylinux8, later almalinux8, already
-        IMAGE_LINUX_DEB = 'opensearchstaging/ci-runner:ci-runner-ubuntu2404-opensearch-build-v1' // required for deb to create pkg using debmake/debuild/debhelper
-        IMAGE_WINDOWS_ZIP = 'opensearchstaging/ci-runner:ci-runner-windows2019-opensearch-build-v1' // required for windows to build zip distribution
     }
     parameters {
         string(
@@ -203,27 +200,27 @@ pipeline {
         }
         stage('build') {
             parallel {
-                stage('Trigger-min-snapshot-build') {
-                    agent {
-                        docker {
-                            label 'Jenkins-Agent-AL2023-X64-M54xlarge-Docker-Host'
-                            image 'docker/library/alpine:3'
-                            registryUrl 'https://public.ecr.aws/'
-                            alwaysPull true
-                        }
-                    }
-                    steps {
-                        script {
-                            def snapshotBuild =
-                                build job: 'publish-opensearch-min-snapshots',
-                                propagate: false,
-                                wait: false,
-                                parameters: [
-                                    string(name: 'INPUT_MANIFEST', value: "${INPUT_MANIFEST}"),
-                                ]
-                        }
-                    }
-                }
+                //stage('Trigger-min-snapshot-build') {
+                //    agent {
+                //        docker {
+                //            label 'Jenkins-Agent-AL2023-X64-M54xlarge-Docker-Host'
+                //            image 'docker/library/alpine:3'
+                //            registryUrl 'https://public.ecr.aws/'
+                //            alwaysPull true
+                //        }
+                //    }
+                //    steps {
+                //        script {
+                //            def snapshotBuild =
+                //                build job: 'publish-opensearch-min-snapshots',
+                //                propagate: false,
+                //                wait: false,
+                //                parameters: [
+                //                    string(name: 'INPUT_MANIFEST', value: "${INPUT_MANIFEST}"),
+                //                ]
+                //        }
+                //    }
+                //}
                 stage('build-and-test-linux-x64-tar') {
                     when {
                         beforeAgent true
@@ -305,122 +302,122 @@ pipeline {
                         }
                     }
                 }
-                //stage('build-and-test-linux-x64-rpm') {
-                //    when {
-                //        beforeAgent true
-                //        expression {
-                //            params.BUILD_PLATFORM.contains('linux')
-                //        }
-                //        expression {
-                //            params.BUILD_DISTRIBUTION.contains('rpm')
-                //        }
-                //    }
-                //    agent { label AGENT_LINUX_X64 }
-                //    stages {
-                //        stage('build-archive-linux-x64-rpm') {
-                //            agent {
-                //                docker {
-                //                    label AGENT_LINUX_X64
-                //                    image dockerAgent.image
-                //                    args dockerAgent.args
-                //                    registryUrl 'https://public.ecr.aws/'
-                //                    alwaysPull true
-                //                }
-                //            }
-                //            steps {
-                //                script {
-                //                    buildArchive(
-                //                        componentName: "${COMPONENT_NAME}",
-                //                        inputManifest: "manifests/${INPUT_MANIFEST}",
-                //                        platform: 'linux',
-                //                        architecture: 'x64',
-                //                        distribution: 'rpm',
-                //                        continueOnError: params.CONTINUE_ON_ERROR,
-                //                        incremental: params.INCREMENTAL,
-                //                        previousBuildId: params.PREVIOUS_BUILD_ID,
-                //                        stashName: "build-archive-linux-x64-rpm-${JOB_NAME}-${BUILD_NUMBER}"
-                //                    )
-                //                }
-                //            }
-                //            post {
-                //                always {
-                //                    script {
-                //                        if (params.CONTINUE_ON_ERROR) {
-                //                            markStageUnstableIfPluginsFailedToBuild()
-                //                        }
-                //                        postCleanup()
-                //                    }
-                //                }
-                //            }
-                //        }
-                //        stage('assemble-archive-and-test-linux-x64-rpm') {
-                //            agent {
-                //                docker {
-                //                    label AGENT_LINUX_X64
-                //                    image IMAGE_LINUX_RPM
-                //                    registryUrl 'https://public.ecr.aws/'
-                //                    alwaysPull true
-                //                }
-                //            }
-                //            steps {
-                //                script {
-                //                    def buildManifestObj = archiveAssembleUpload(
-                //                        componentName: "${COMPONENT_NAME}",
-                //                        inputManifest: "manifests/${INPUT_MANIFEST}",
-                //                        platform: 'linux',
-                //                        architecture: 'x64',
-                //                        distribution: 'rpm',
-                //                        continueOnError: params.CONTINUE_ON_ERROR,
-                //                        stashName: "build-archive-linux-x64-rpm-${JOB_NAME}-${BUILD_NUMBER}"
-                //                    )
-                //                    String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
-                //                    String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
-                //                    env.ARTIFACT_URL_LINUX_X64_RPM = artifactUrl
-                //                    env.INDEX_FILE_PATH_X64_RPM = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
+                stage('build-and-test-linux-x64-rpm') {
+                    when {
+                        beforeAgent true
+                        expression {
+                            params.BUILD_PLATFORM.contains('linux')
+                        }
+                        expression {
+                            params.BUILD_DISTRIBUTION.contains('rpm')
+                        }
+                    }
+                    agent { label AGENT_LINUX_X64 }
+                    stages {
+                        stage('build-archive-linux-x64-rpm') {
+                            agent {
+                                docker {
+                                    label AGENT_LINUX_X64
+                                    image dockerAgentLinuxTar.image
+                                    args dockerAgentLinuxRpm.args
+                                    registryUrl 'https://public.ecr.aws/'
+                                    alwaysPull true
+                                }
+                            }
+                            steps {
+                                script {
+                                    buildArchive(
+                                        componentName: "${COMPONENT_NAME}",
+                                        inputManifest: "manifests/${INPUT_MANIFEST}",
+                                        platform: 'linux',
+                                        architecture: 'x64',
+                                        distribution: 'rpm',
+                                        continueOnError: params.CONTINUE_ON_ERROR,
+                                        incremental: params.INCREMENTAL,
+                                        previousBuildId: params.PREVIOUS_BUILD_ID,
+                                        stashName: "build-archive-linux-x64-rpm-${JOB_NAME}-${BUILD_NUMBER}"
+                                    )
+                                }
+                            }
+                            post {
+                                always {
+                                    script {
+                                        if (params.CONTINUE_ON_ERROR) {
+                                            markStageUnstableIfPluginsFailedToBuild()
+                                        }
+                                        postCleanup()
+                                    }
+                                }
+                            }
+                        }
+                        stage('assemble-archive-and-test-linux-x64-rpm') {
+                            agent {
+                                docker {
+                                    label AGENT_LINUX_X64
+                                    image dockerAgentLinuxRpm.image
+                                    registryUrl 'https://public.ecr.aws/'
+                                    alwaysPull true
+                                }
+                            }
+                            steps {
+                                script {
+                                    def buildManifestObj = archiveAssembleUpload(
+                                        componentName: "${COMPONENT_NAME}",
+                                        inputManifest: "manifests/${INPUT_MANIFEST}",
+                                        platform: 'linux',
+                                        architecture: 'x64',
+                                        distribution: 'rpm',
+                                        continueOnError: params.CONTINUE_ON_ERROR,
+                                        stashName: "build-archive-linux-x64-rpm-${JOB_NAME}-${BUILD_NUMBER}"
+                                    )
+                                    String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
+                                    String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
+                                    env.ARTIFACT_URL_LINUX_X64_RPM = artifactUrl
+                                    env.INDEX_FILE_PATH_X64_RPM = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
-                //                    echo "buildManifestUrl (linux, x64, rpm): ${buildManifestUrl}"
-                //                    echo "artifactUrl (linux, x64, rpm): ${artifactUrl}"
+                                    echo "buildManifestUrl (linux, x64, rpm): ${buildManifestUrl}"
+                                    echo "artifactUrl (linux, x64, rpm): ${artifactUrl}"
 
-                //                    String bundleManifestUrl = buildManifestObj.getBundleManifestUrl(JOB_NAME, BUILD_NUMBER)
+                                    String bundleManifestUrl = buildManifestObj.getBundleManifestUrl(JOB_NAME, BUILD_NUMBER)
 
-                //                    parallel([
-                //                        'integ-test': {
-                //                            triggerIntegrationTests(buildManifestUrl, 'linux', 'rpm')
-                //                        },
-                //                        'smoke-test': {
-                //                            triggerSmokeTests(buildManifestUrl, 'linux', 'rpm')
-                //                        }
-                //                    ])
-                //                }
-                //            }
-                //            post {
-                //                success {
-                //                    script {
-                //                        if (params.UPDATE_LATEST_URL) {
-                //                            uploadIndexFile(
-                //                                indexFilePath: env.INDEX_FILE_PATH_X64_RPM
-                //                            )
-                //                        }
-                //                    }
-                //                }
-                //                unstable {
-                //                    script {
-                //                        if (params.UPDATE_LATEST_URL) {
-                //                            uploadIndexFile(
-                //                                indexFilePath: env.INDEX_FILE_PATH_X64_RPM
-                //                            )
-                //                        }
-                //                    }
-                //                }
-                //                always {
-                //                    script {
-                //                        postCleanup()
-                //                    }
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
+                                    parallel([
+                                        'integ-test': {
+                                            triggerIntegrationTests(buildManifestUrl, 'linux', 'rpm')
+                                        },
+                                        'smoke-test': {
+                                            triggerSmokeTests(buildManifestUrl, 'linux', 'rpm')
+                                        }
+                                    ])
+                                }
+                            }
+                            post {
+                                success {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_X64_RPM
+                                            )
+                                        }
+                                    }
+                                }
+                                unstable {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_X64_RPM
+                                            )
+                                        }
+                                    }
+                                }
+                                always {
+                                    script {
+                                        postCleanup()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 //stage('build-and-test-linux-x64-deb') {
                 //    when {
                 //        beforeAgent true
@@ -437,8 +434,8 @@ pipeline {
                 //            agent {
                 //                docker {
                 //                    label AGENT_LINUX_X64
-                //                    image dockerAgent.image
-                //                    args dockerAgent.args
+                //                    image dockerAgentLinuxTar.image
+                //                    args dockerAgentLinuxDeb.args
                 //                    registryUrl 'https://public.ecr.aws/'
                 //                    alwaysPull true
                 //                }
@@ -473,7 +470,7 @@ pipeline {
                 //            agent {
                 //                docker {
                 //                    label AGENT_LINUX_X64
-                //                    image IMAGE_LINUX_DEB
+                //                    image dockerAgentLinuxDeb.image
                 //                    registryUrl 'https://public.ecr.aws/'
                 //                    alwaysPull true
                 //                }
@@ -550,8 +547,8 @@ pipeline {
                 //    agent {
                 //        docker {
                 //            label AGENT_LINUX_ARM64
-                //            image dockerAgent.image
-                //            args dockerAgent.args
+                //            image dockerAgentLinuxTar.image
+                //            args dockerAgentLinuxTar.args
                 //            registryUrl 'https://public.ecr.aws/'
                 //            alwaysPull true
                 //        }
@@ -631,8 +628,8 @@ pipeline {
                 //            agent {
                 //                docker {
                 //                    label AGENT_LINUX_ARM64
-                //                    image dockerAgent.image
-                //                    args dockerAgent.args
+                //                    image dockerAgentLinuxTar.image
+                //                    args dockerAgentLinuxRpm.args
                 //                    registryUrl 'https://public.ecr.aws/'
                 //                    alwaysPull true
                 //                }
@@ -667,7 +664,7 @@ pipeline {
                 //            agent {
                 //                docker {
                 //                    label AGENT_LINUX_ARM64
-                //                    image IMAGE_LINUX_RPM
+                //                    image dockerAgentLinuxRpm.image
                 //                    registryUrl 'https://public.ecr.aws/'
                 //                    alwaysPull true
                 //                }
@@ -748,8 +745,8 @@ pipeline {
                 //            agent {
                 //                docker {
                 //                    label AGENT_LINUX_ARM64
-                //                    image dockerAgent.image
-                //                    args dockerAgent.args
+                //                    image dockerAgentLinuxTar.image
+                //                    args dockerAgentLinuxDeb.args
                 //                    registryUrl 'https://public.ecr.aws/'
                 //                    alwaysPull true
                 //                }
@@ -784,7 +781,7 @@ pipeline {
                 //            agent {
                 //                docker {
                 //                    label AGENT_LINUX_ARM64
-                //                    image IMAGE_LINUX_DEB
+                //                    image dockerAgentLinuxDeb.image
                 //                    registryUrl 'https://public.ecr.aws/'
                 //                    alwaysPull true
                 //                }
@@ -862,7 +859,7 @@ pipeline {
                 //    agent {
                 //        docker {
                 //            label AGENT_WINDOWS_X64
-                //            image IMAGE_WINDOWS_ZIP
+                //            image dockerAgentWindowsZip.image
                 //            registryUrl 'https://public.ecr.aws/'
                 //            alwaysPull true
                 //        }
@@ -941,8 +938,8 @@ pipeline {
                 //    agent {
                 //        docker {
                 //            label AGENT_LINUX_X64
-                //            image dockerAgent.image
-                //            args dockerAgent.args
+                //            image dockerAgentLinuxTar.image
+                //            args dockerAgentLinuxTar.args
                 //            registryUrl 'https://public.ecr.aws/'
                 //            alwaysPull true
                 //        }
