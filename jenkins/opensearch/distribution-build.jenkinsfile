@@ -164,13 +164,12 @@ pipeline {
                         linux_rpm: dockerAgentLinuxRpm,
                         windows_zip: dockerAgentWindowsZip
                     ].each { name, agent ->
-                        echo "${name} Image: ${agent.image}, Docker Args: ${agent.args}"
+                        echo("${name} Image: ${agent.image}, Args: ${agent.args}")
                     }
 
                     env.javaVersionNumber = dockerAgentWindowsZip.javaVersion.replaceAll('[^0-9]', '') // Only get number
+                    echo("Windows Java Version: ${env.javaVersionNumber}")
                     currentBuild.description = INPUT_MANIFEST
-
-                    error("Exit 1")
 
                     paramType = [
                         'BUILD_PLATFORM': 'linux windows',
@@ -225,87 +224,87 @@ pipeline {
                         }
                     }
                 }
-                //stage('build-and-test-linux-x64-tar') {
-                //    when {
-                //        beforeAgent true
-                //        expression {
-                //            params.BUILD_PLATFORM.contains('linux')
-                //        }
-                //        expression {
-                //            params.BUILD_DISTRIBUTION.contains('tar')
-                //        }
-                //    }
-                //    agent {
-                //        docker {
-                //            label AGENT_LINUX_X64
-                //            image dockerAgent.image
-                //            args dockerAgent.args
-                //            registryUrl 'https://public.ecr.aws/'
-                //            alwaysPull true
-                //        }
-                //    }
-                //    steps {
-                //        script {
-                //            def buildManifestObj = buildAssembleUpload(
-                //                componentName: "${COMPONENT_NAME}",
-                //                inputManifest: "manifests/${INPUT_MANIFEST}",
-                //                platform: 'linux',
-                //                architecture: 'x64',
-                //                distribution: 'tar',
-                //                continueOnError: params.CONTINUE_ON_ERROR,
-                //                incremental: params.INCREMENTAL,
-                //                previousBuildId: params.PREVIOUS_BUILD_ID
-                //            )
-                //            String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
-                //            String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
-                //            env.ARTIFACT_URL_LINUX_X64_TAR = artifactUrl
-                //            env.INDEX_FILE_PATH_X64_TAR = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
+                stage('build-and-test-linux-x64-tar') {
+                    when {
+                        beforeAgent true
+                        expression {
+                            params.BUILD_PLATFORM.contains('linux')
+                        }
+                        expression {
+                            params.BUILD_DISTRIBUTION.contains('tar')
+                        }
+                    }
+                    agent {
+                        docker {
+                            label AGENT_LINUX_X64
+                            image dockerAgentLinuxTar.image
+                            args dockerAgentLinuxTar.args
+                            registryUrl 'https://public.ecr.aws/'
+                            alwaysPull true
+                        }
+                    }
+                    steps {
+                        script {
+                            def buildManifestObj = buildAssembleUpload(
+                                componentName: "${COMPONENT_NAME}",
+                                inputManifest: "manifests/${INPUT_MANIFEST}",
+                                platform: 'linux',
+                                architecture: 'x64',
+                                distribution: 'tar',
+                                continueOnError: params.CONTINUE_ON_ERROR,
+                                incremental: params.INCREMENTAL,
+                                previousBuildId: params.PREVIOUS_BUILD_ID
+                            )
+                            String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
+                            String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
+                            env.ARTIFACT_URL_LINUX_X64_TAR = artifactUrl
+                            env.INDEX_FILE_PATH_X64_TAR = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
-                //            echo "buildManifestUrl (linux, x64, tar): ${buildManifestUrl}"
-                //            echo "artifactUrl (linux, x64, tar): ${artifactUrl}"
+                            echo "buildManifestUrl (linux, x64, tar): ${buildManifestUrl}"
+                            echo "artifactUrl (linux, x64, tar): ${artifactUrl}"
 
-                //            parallel([
-                //                'integ-test': {
-                //                    triggerIntegrationTests(buildManifestUrl, 'linux', 'tar')
-                //                },
-                //                'smoke-test': {
-                //                    triggerSmokeTests(buildManifestUrl, 'linux', 'tar')
-                //                },
-                //                'bwc-test': {
-                //                    triggerBWCTests(buildManifestUrl, 'linux', 'tar')
-                //                }
-                //            ])
-                //        }
-                //    }
-                //    post {
-                //        success {
-                //            script {
-                //                if (params.UPDATE_LATEST_URL) {
-                //                    uploadIndexFile(
-                //                        indexFilePath: env.INDEX_FILE_PATH_X64_TAR
-                //                    )
-                //                }
-                //            }
-                //        }
-                //        unstable {
-                //            script {
-                //                if (params.UPDATE_LATEST_URL) {
-                //                    uploadIndexFile(
-                //                        indexFilePath: env.INDEX_FILE_PATH_X64_TAR
-                //                    )
-                //                }
-                //            }
-                //        }
-                //        always {
-                //            script {
-                //                if (params.CONTINUE_ON_ERROR) {
-                //                    markStageUnstableIfPluginsFailedToBuild()
-                //                }
-                //                postCleanup()
-                //            }
-                //        }
-                //    }
-                //}
+                            parallel([
+                                'integ-test': {
+                                    triggerIntegrationTests(buildManifestUrl, 'linux', 'tar')
+                                },
+                                'smoke-test': {
+                                    triggerSmokeTests(buildManifestUrl, 'linux', 'tar')
+                                },
+                                'bwc-test': {
+                                    triggerBWCTests(buildManifestUrl, 'linux', 'tar')
+                                }
+                            ])
+                        }
+                    }
+                    post {
+                        success {
+                            script {
+                                if (params.UPDATE_LATEST_URL) {
+                                    uploadIndexFile(
+                                        indexFilePath: env.INDEX_FILE_PATH_X64_TAR
+                                    )
+                                }
+                            }
+                        }
+                        unstable {
+                            script {
+                                if (params.UPDATE_LATEST_URL) {
+                                    uploadIndexFile(
+                                        indexFilePath: env.INDEX_FILE_PATH_X64_TAR
+                                    )
+                                }
+                            }
+                        }
+                        always {
+                            script {
+                                if (params.CONTINUE_ON_ERROR) {
+                                    markStageUnstableIfPluginsFailedToBuild()
+                                }
+                                postCleanup()
+                            }
+                        }
+                    }
+                }
                 //stage('build-and-test-linux-x64-rpm') {
                 //    when {
                 //        beforeAgent true
