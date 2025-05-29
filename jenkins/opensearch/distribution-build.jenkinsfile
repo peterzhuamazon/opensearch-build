@@ -140,8 +140,26 @@ pipeline {
                         error("Input manifest was not provided or not found at manifests/${INPUT_MANIFEST}.")
                     }
                     echo('Detect Docker Images and Related Parameters')
-                    dockerAgent = detectDockerAgent()
-                    env.javaVersionNumber = dockerAgent.javaVersion.replaceAll('[^0-9]', '') // Only get number
+                    dockerAgentLinuxTar = detectDockerAgent(
+                        distribution: "tar",
+                        platform: "linux"
+                    )
+                    dockerAgentLinuxDeb = detectDockerAgent(
+                        distribution: "deb",
+                        platform: "linux"
+                    )
+                    dockerAgentLinuxRpm = detectDockerAgent(
+                        distribution: "rpm",
+                        platform: "linux"
+                    )
+                    dockerAgentWindowsZip = detectDockerAgent(
+                        distribution: "zip",
+                        platform: "windows"
+                    )
+                    env.javaVersionNumber = dockerAgentWindowsZip.javaVersion.replaceAll('[^0-9]', '') // Only get number
+                    [ dockerAgentLinuxTar, dockerAgentLinuxDeb, dockerAgentLinuxRpm, dockerAgentWindowsZip].each { dockerAgent ->
+                        echo "Docker Image Name: ${dockerAgent.name}"
+                    }
                     currentBuild.description = INPUT_MANIFEST
 
                     error("Exit 1")
