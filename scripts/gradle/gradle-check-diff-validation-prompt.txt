@@ -1,0 +1,18 @@
+Analyze the given git diff for security vulnerabilities and malicious code patterns.
+
+Review for security issues including but not limited to:
+- Injection vulnerabilities (SQL, command, LDAP, template, etc.)
+- Cross-site scripting (XSS) and improper output encoding
+- Authentication and authorization flaws
+- Insecure deserialization and XML parsing
+- Malicious code (data exfiltration, backdoors, obfuscated logic)
+- Hardcoded secrets and credential exposure
+- Suspicious network calls or external communications
+- Privilege escalation attempts
+- Insecure file operations and path traversal
+- Cryptographic weaknesses and insecure randomness
+- Any other suspicious or anomalous code patterns
+
+Here is the diff to analyze:
+```diff
+
