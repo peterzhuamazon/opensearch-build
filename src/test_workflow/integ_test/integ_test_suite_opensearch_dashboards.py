@@ -113,6 +113,8 @@ class IntegTestSuiteOpenSearchDashboards(IntegTestSuite):
             cmd = f"bash {script} -b {single_node.endpoint} -p {single_node.port} -s {str(security).lower()} -t {self.component.name} -v {self.bundle_manifest.build.version} -o default -r false"
             self.repo_work_dir = os.path.join(
                 self.repo.dir, self.test_config.working_directory) if self.test_config.working_directory is not None else self.repo.dir
+            print(self.repo.dir)
+            print(self.repo_work_dir)
             (status, stdout, stderr) = execute(cmd, self.repo_work_dir, True, False)
             test_result_data_local = TestResultData(
                 self.component.name,
