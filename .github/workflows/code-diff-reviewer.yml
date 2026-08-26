@@ -76,9 +76,7 @@ jobs:
       - name: Set stream compatibility review prompt
         if: ${{ env.skip_diff_reviewer != 'true' && inputs.enable_stream_compat_review }}
         run: |
-          {
-            echo 'STREAM_COMPAT_PROMPT<<PROMPT_EOF'
-            cat <<'PROMPT_TEXT'
+          PROMPT_CONTENT=$(cat <<'PROMPT_TEXT'
           Apply the following focused review lens IN ADDITION to your normal review. It targets one class of defect: OpenSearch binary wire-format compatibility. Report matching findings alongside your other review comments; it does not change your output format.
 
           SCOPE (check first): This applies ONLY to JVM (Java/Kotlin) code using the OpenSearch binary stream framework — org.opensearch.core.common.io.stream (StreamInput, StreamOutput, Writeable, NamedWriteable, NamedWriteableRegistry). Imports are usually outside the diff, so judge scope on shape alone: writeTo(StreamOutput), a single-arg StreamInput constructor, readFrom, out.write*/in.read* calls, getWriteableName, or registry entries. Similarly named unrelated classes (java.io.DataInput, Lucene's DataOutput) are out of scope. If nothing in the diff matches these shapes — including all non-JVM repos such as OpenSearch Dashboards (TypeScript/JavaScript), Python, Go, Rust — raise nothing for this lens. Judge only the changed code, never the PR title or description.
@@ -107,7 +105,14 @@ jobs:
 
           Judge byte layout only for this lens; leave unrelated correctness, style, and language concerns to your normal review. Under-reporting costs more than over-reporting — when unsure whether a type reaches older nodes, flag it and state what you could not determine. If nothing in the diff matches the shapes above, raise nothing for this lens.
           PROMPT_TEXT
-            echo 'PROMPT_EOF'
+          )
+          {
+            echo 'PR_REVIEWER.EXTRA_INSTRUCTIONS<<STREAM_COMPAT_EOF'
+            echo "$PROMPT_CONTENT"
+            echo 'STREAM_COMPAT_EOF'
+            echo 'PR_CODE_SUGGESTIONS.EXTRA_INSTRUCTIONS<<STREAM_COMPAT_EOF'
+            echo "$PROMPT_CONTENT"
+            echo 'STREAM_COMPAT_EOF'
           } >> "$GITHUB_ENV"
       - name: PR Agent Review
         if: ${{ env.skip_diff_reviewer != 'true' }}
@@ -129,7 +134,6 @@ jobs:
           pr_reviewer.require_security_review: true
           pr_reviewer.enable_review_labels_security: false  # avoid too many labels at the moment
           pr_reviewer.enable_review_labels_effort: false
-          pr_reviewer.extra_instructions: ${{ env.STREAM_COMPAT_PROMPT || '' }}
           pr_code_suggestions.max_history_len: 5  # max number of history of previous suggestions in same persistent comment
           pr_code_suggestions.max_number_of_calls: 5  # max number of chunks to cut PR, make X number of calls per commit on PR, each config.max_model_tokens number of tokens
           pr_code_suggestions.num_code_suggestions_per_chunk: 4  # max number of suggestions per chunk
@@ -140,7 +144,6 @@ jobs:
           pr_code_suggestions.wiki_page_accepted_suggestions: false
           pr_code_suggestions.allow_thumbs_up_down: true
           pr_code_suggestions.publish_output_no_suggestions: false  # avoid comment even if there is no suggestions
-          pr_code_suggestions.extra_instructions: ${{ env.STREAM_COMPAT_PROMPT || '' }}
           config.max_model_tokens: 70000
           config.model: 'bedrock/us.anthropic.claude-opus-4-7'
           config.fallback_models: '["bedrock/us.anthropic.claude-sonnet-4-6"]'
